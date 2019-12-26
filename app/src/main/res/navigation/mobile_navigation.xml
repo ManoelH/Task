@@ -11,7 +11,7 @@
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
-    <fragment
+<!--    <fragment
         android:id="@+id/nav_gallery"
         android:name="com.manoelh.task.ui.gallery.GalleryFragment"
         android:label="@string/menu_gallery"
@@ -39,5 +39,5 @@
         android:id="@+id/nav_send"
         android:name="com.manoelh.task.ui.send.SendFragment"
         android:label="@string/menu_send"
-        tools:layout="@layout/fragment_send" />
+        tools:layout="@layout/fragment_send" />-->
 </navigation>
