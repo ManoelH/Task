@@ -4,9 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import com.manoelh.task.business.UserBusiness
+import com.manoelh.task.entity.UserEntity
 import kotlinx.android.synthetic.main.activity_register.*
 
 class RegisterActivity : AppCompatActivity(), View.OnClickListener {
+
+    lateinit var user: UserEntity
+    val userBusiness = UserBusiness(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +25,11 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun registerUser(){
-        Toast.makeText(this, "Testing click button", Toast.LENGTH_LONG).show()
+        val name = editTextName.text.toString()
+        val email = editTextEmail.text.toString()
+        val password = editTextPassword.text.toString()
+        user = UserEntity(name, email, password)
+        userBusiness.registerUser(user)
     }
 
 
