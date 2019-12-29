@@ -22,4 +22,10 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="userValidationException">Error, enter all values</string>
+    <string name="genericError">One error happened</string>
+    <string name="invalidEmail">email is invalid!</string>
+    <string name="userSaved">User registered with success!</string>
+    <string name="validationLettersAndNumbersPassword">The password should contain letters and numbers</string>
+    <string name="validationPasswordCharacters">Error the password should contain in minimum 8 characters</string>
 </resources>
