@@ -8,10 +8,14 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.manoelh.task.constants.SharedPreferencesContants
+import com.manoelh.task.util.SecurityPreferences
+import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var mSecurityPreferences: SecurityPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +29,7 @@ class MainActivity : AppCompatActivity() {
                 .setAction("Action", null).show()
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
+        //val navView: NavigationView = findViewById(R.id.nav_view)
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -35,7 +39,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send*/
             ), drawerLayout
         )
-
+        mSecurityPreferences = SecurityPreferences(this)
+        //textViewUserName.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_NAME)
+        //textViewUserEmail.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_EMAIL)
     }
 
 }

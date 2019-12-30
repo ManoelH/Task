@@ -1,5 +1,6 @@
 package com.manoelh.task
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -12,12 +13,13 @@ import kotlinx.android.synthetic.main.activity_register.*
 class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     lateinit var user: UserEntity
-    val userBusiness = UserBusiness(this)
+    lateinit var userBusiness: UserBusiness
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
         buttonRegister.setOnClickListener(this)
+        userBusiness = UserBusiness(this)
     }
 
     override fun onClick(view: View) {
@@ -32,12 +34,13 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
             val password = editTextPassword.text.toString()
             user = UserEntity(name, email, password)
             userBusiness.registerUser(user)
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }catch (ve: ValidationException){
             Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
         }catch (e: Exception){
             Toast.makeText(this, getString(R.string.genericError), Toast.LENGTH_LONG).show()
         }
     }
-
 
 }
