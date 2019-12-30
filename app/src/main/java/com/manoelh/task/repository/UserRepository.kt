@@ -3,10 +3,10 @@ package com.manoelh.task.repository
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
-import com.manoelh.task.constants.DatabaseConstants
 import com.manoelh.task.constants.DatabaseConstants.DATABASE.COLUMNS.PASSWORD
 import com.manoelh.task.constants.DatabaseConstants.DATABASE.COLUMNS.EMAIL
 import com.manoelh.task.constants.DatabaseConstants.DATABASE.COLUMNS.NAME
+import com.manoelh.task.constants.DatabaseConstants.DATABASE.COLUMNS.ID
 import com.manoelh.task.constants.DatabaseConstants.DATABASE.TABLE_NAME
 import com.manoelh.task.entity.UserEntity
 import java.lang.Exception
@@ -50,5 +50,28 @@ class UserRepository private constructor(context: Context){
             throw e
         }
         return emailExist
+    }
+
+    fun login(userEmail: String, userPassword: String): UserEntity?{
+        var user: UserEntity? = null
+        try {
+            var cursor: Cursor
+            val db = mDatabaseHelper.readableDatabase
+            val columns = arrayOf(ID, NAME, EMAIL)
+            val selectionArgs = arrayOf(userEmail, userPassword)
+            cursor = db.query(TABLE_NAME, columns, "$EMAIL = ? and $PASSWORD = ?", selectionArgs,
+                null, null, null)
+            if (cursor.count > 0){
+                cursor.moveToFirst()
+                val id = cursor.getLong(cursor.getColumnIndex(ID))
+                val name = cursor.getString(cursor.getColumnIndex(NAME))
+                val email = cursor.getString(cursor.getColumnIndex(EMAIL))
+                user = UserEntity(id, name, email)
+            }
+            cursor.close()
+        }catch (e: Exception){
+            throw e
+        }
+        return user
     }
 }

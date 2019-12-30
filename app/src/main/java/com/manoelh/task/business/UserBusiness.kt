@@ -16,9 +16,9 @@ class UserBusiness (var context: Context) {
 
     fun registerUser(user: UserEntity){
         validateRegisterUser(user)
-        val userId = userRepository.insert(user)
+        user.id = userRepository.insert(user)
         Toast.makeText(context, context.getString(R.string.userSaved), Toast.LENGTH_LONG).show()
-        saveSharedPreferencesUser(user, userId)
+        saveSharedPreferencesUser(user)
     }
 
     private fun validateRegisterUser(user: UserEntity){
@@ -36,9 +36,18 @@ class UserBusiness (var context: Context) {
             throw ValidationException(context.getString(R.string.emailExist))
     }
 
-    private fun saveSharedPreferencesUser(user: UserEntity, userId: Long){
-        mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_ID, userId.toString())
+    private fun saveSharedPreferencesUser(user: UserEntity){
+        mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_ID, user.id.toString())
         mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_NAME, user.name)
         mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_EMAIL, user.email)
+    }
+    
+    fun login(email: String, password: String): Boolean{
+        val user = userRepository.login(email, password)
+        if (user != null){
+            saveSharedPreferencesUser(user)
+            return true
+        }
+        return false
     }
 }

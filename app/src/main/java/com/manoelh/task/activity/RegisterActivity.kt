@@ -1,10 +1,11 @@
-package com.manoelh.task
+package com.manoelh.task.activity
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import com.manoelh.task.R
 import com.manoelh.task.business.UserBusiness
 import com.manoelh.task.entity.UserEntity
 import com.manoelh.task.util.ValidationException
@@ -32,10 +33,11 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
             val name = editTextName.text.toString()
             val email = editTextEmail.text.toString()
             val password = editTextPassword.text.toString()
-            user = UserEntity(name, email, password)
+            user = UserEntity(name = name, email = email, password = password)
             userBusiness.registerUser(user)
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+            finish()
         }catch (ve: ValidationException){
             Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
         }catch (e: Exception){

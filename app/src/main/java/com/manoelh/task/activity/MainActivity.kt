@@ -1,16 +1,14 @@
-package com.manoelh.task
+package com.manoelh.task.activity
 
 import android.os.Bundle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.manoelh.task.constants.SharedPreferencesContants
+import com.manoelh.task.R
 import com.manoelh.task.util.SecurityPreferences
-import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity() {
 
