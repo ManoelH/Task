@@ -1,16 +1,20 @@
 package com.manoelh.task.activity
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.google.android.material.navigation.NavigationView
 import com.manoelh.task.R
+import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.util.SecurityPreferences
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mSecurityPreferences: SecurityPreferences
@@ -33,13 +37,30 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home/*, R.id.nav_gallery, R.id.nav_slideshow,
+                R.id.nav_home, R.id.nav_done, R.id.nav_todo, R.id.nav_logout, R.id.nav_header/*, R.id.nav_gallery, R.id.nav_slideshow,
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send*/
             ), drawerLayout
         )
         mSecurityPreferences = SecurityPreferences(this)
+        val navigationView = findViewById<NavigationView>(R.id.nav_view)
+        navigationView.setNavigationItemSelectedListener(this)
+
         //textViewUserName.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_NAME)
         //textViewUserEmail.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_EMAIL)
     }
 
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.nav_logout)
+            logout()
+        return true
+    }
+
+    private fun logout(){
+        mSecurityPreferences.removeStoreString(SharedPreferencesContants.KEYS.USER_ID)
+        mSecurityPreferences.removeStoreString(SharedPreferencesContants.KEYS.USER_NAME)
+        mSecurityPreferences.removeStoreString(SharedPreferencesContants.KEYS.USER_EMAIL)
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
 }
