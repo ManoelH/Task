@@ -62,8 +62,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun loadFragment(fragment: Fragment){
-        val fragmentManager = supportFragmentManager
-        fragmentManager.beginTransaction().replace(R.id.frameFragment, fragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.frameFragment, fragment).commit()
     }
 
     private fun logout(){
