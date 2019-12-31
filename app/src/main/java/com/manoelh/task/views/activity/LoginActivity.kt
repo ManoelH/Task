@@ -1,4 +1,4 @@
-package com.manoelh.task.activity
+package com.manoelh.task.views.activity
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

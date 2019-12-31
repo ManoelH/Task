@@ -1,4 +1,4 @@
-package com.manoelh.task.activity
+package com.manoelh.task.views.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,10 +9,13 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import com.manoelh.task.R
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.util.SecurityPreferences
+import com.manoelh.task.views.fragment.TaskListDoneFragment
+import com.manoelh.task.views.fragment.TaskListToDoFragment
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
 
@@ -44,15 +47,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mSecurityPreferences = SecurityPreferences(this)
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
-
+        loadFragment(TaskListToDoFragment.newInstance())
         //textViewUserName.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_NAME)
         //textViewUserEmail.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_EMAIL)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.nav_logout)
-            logout()
+        when(item.itemId){
+            R.id.nav_todo -> loadFragment(TaskListToDoFragment.newInstance())
+            R.id.nav_done -> loadFragment(TaskListDoneFragment.newInstance())
+            R.id.nav_logout -> logout()
+        }
         return true
+    }
+
+    private fun loadFragment(fragment: Fragment){
+        val fragmentManager = supportFragmentManager
+        fragmentManager.beginTransaction().replace(R.id.frameFragment, fragment).commit()
     }
 
     private fun logout(){
