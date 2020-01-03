@@ -3,11 +3,11 @@ package com.manoelh.task.repository
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
-import com.manoelh.task.constants.DatabaseConstants.DATABASE.COLUMNS.PASSWORD
-import com.manoelh.task.constants.DatabaseConstants.DATABASE.COLUMNS.EMAIL
-import com.manoelh.task.constants.DatabaseConstants.DATABASE.COLUMNS.NAME
-import com.manoelh.task.constants.DatabaseConstants.DATABASE.COLUMNS.ID
-import com.manoelh.task.constants.DatabaseConstants.DATABASE.TABLE_NAME
+import com.manoelh.task.constants.DatabaseConstants
+import com.manoelh.task.constants.DatabaseConstants.TABLES.USER.COLUMNS.PASSWORD
+import com.manoelh.task.constants.DatabaseConstants.TABLES.USER.COLUMNS.EMAIL
+import com.manoelh.task.constants.DatabaseConstants.TABLES.USER.COLUMNS.NAME
+import com.manoelh.task.constants.DatabaseConstants.TABLES.USER.COLUMNS.ID
 import com.manoelh.task.entity.UserEntity
 import java.lang.Exception
 
@@ -15,6 +15,7 @@ import java.lang.Exception
 class UserRepository private constructor(context: Context){
 
     private val mDatabaseHelper: DatabaseHelper = DatabaseHelper(context)
+    private val TABLE_NAME = DatabaseConstants.TABLES.USER.NAME
 
     companion object{
         private var INSTANCE: UserRepository? = null

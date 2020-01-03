@@ -7,10 +7,12 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
+import android.widget.Toast
 import com.manoelh.task.R
+import com.manoelh.task.business.TaskBusiness
 import com.manoelh.task.constants.TaskConstants
+import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.entity.TaskEntity
-import com.manoelh.task.util.PriorityUtil
 import kotlinx.android.synthetic.main.activity_task_form.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -18,19 +20,22 @@ import java.util.*
 class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
     View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
-    private val priorities = PriorityUtil.PRIORITIES
+    private lateinit var taskBusiness: TaskBusiness
     private lateinit var task: TaskEntity
     private val calendar = Calendar.getInstance()
+    private lateinit var prioritySelected: PriorityEntity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_task_form)
+        taskBusiness = TaskBusiness(this)
         setListeners()
         loadSpinner()
     }
 
     private fun loadSpinner(){
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, priorities)
+        val priorities = taskBusiness.loadPriorities()
+        val adapter = ArrayAdapter<PriorityEntity>(this, android.R.layout.simple_spinner_dropdown_item, priorities)
         spinnerPriority.adapter = adapter
     }
 
@@ -45,7 +50,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     override fun onItemSelected(adapterView: AdapterView<*>, view: View, position: Int, id: Long) {
-
+        prioritySelected = spinnerPriority.selectedItem as PriorityEntity
     }
 
     override fun onClick(view: View) {
@@ -63,11 +68,12 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     private fun registerTask(){
-        val priority = spinnerPriority.selectedItem.toString()
+        val priorityId = prioritySelected.id
         val description = editTextDescription.text.toString()
         val complete = returnCheckboxValue()
         val date = editTextDate.text.toString()
-        task = TaskEntity(description = description, priority = priority, complete = complete, date = date)
+        task = TaskEntity(description = description, priority_id = priorityId, complete = complete, date = date)
+        Toast.makeText(this, "priority id: $priorityId", Toast.LENGTH_LONG).show()
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, dayOfMonth: Int) {
@@ -79,7 +85,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
     private fun returnCheckboxValue(): Int {
         var isChecked: Int
-        if (checkBoxComplete.isChecked)
+        if (checkBoxCompleted.isChecked)
             isChecked = TaskConstants.COMPLETE.YES
         else
             isChecked = TaskConstants.COMPLETE.NOT
