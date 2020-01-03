@@ -30,17 +30,17 @@ class UserRepository private constructor(context: Context){
 
     fun insert(user: UserEntity): Long{
         val db = mDatabaseHelper.writableDatabase
-        var contentValues = ContentValues()
-        contentValues.put(NAME, user.name)
-        contentValues.put(EMAIL, user.email)
-        contentValues.put(PASSWORD, user.password)
-        return db.insert(TABLE_NAME, null, contentValues)
+        val insertValues = ContentValues()
+        insertValues.put(NAME, user.name)
+        insertValues.put(EMAIL, user.email)
+        insertValues.put(PASSWORD, user.password)
+        return db.insert(TABLE_NAME, null, insertValues)
     }
 
     fun thisEmailExist(userEmail: String): Boolean{
-        var emailExist: Boolean
+        val emailExist: Boolean
         try {
-            var cursor: Cursor
+            val cursor: Cursor
             val db = mDatabaseHelper.readableDatabase
             val columns = arrayOf(EMAIL)
             val selectionArgs = arrayOf(userEmail)
@@ -56,7 +56,7 @@ class UserRepository private constructor(context: Context){
     fun login(userEmail: String, userPassword: String): UserEntity?{
         var user: UserEntity? = null
         try {
-            var cursor: Cursor
+            val cursor: Cursor
             val db = mDatabaseHelper.readableDatabase
             val columns = arrayOf(ID, NAME, EMAIL)
             val selectionArgs = arrayOf(userEmail, userPassword)

@@ -13,6 +13,6 @@ class TaskBusiness (context: Context){
 
     fun loadPriorities() :MutableList<PriorityEntity> = mPriorityRepository.listPriorities()
 
-    fun loadTasks() :MutableList<TaskEntity> = mTaskRepository.listPriorities()
+    fun loadTasks(userId: Long) :MutableList<TaskEntity> = mTaskRepository.listTasks(userId)
 
 }

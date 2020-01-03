@@ -70,9 +70,9 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private fun registerTask(){
         val priorityId = prioritySelected.id
         val description = editTextDescription.text.toString()
-        val complete = returnCheckboxValue()
-        val date = editTextDate.text.toString()
-        task = TaskEntity(description = description, priority_id = priorityId, complete = complete, date = date, user_id = 0)
+        val completed = returnCheckboxValue()
+        val dueDate = editTextDate.text.toString()
+        task = TaskEntity(description = description, priority_id = priorityId, completed = completed, dueDate = dueDate, user_id = 0)
         Toast.makeText(this, "priority id: $priorityId", Toast.LENGTH_LONG).show()
     }
 
