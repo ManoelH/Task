@@ -11,12 +11,12 @@ import com.manoelh.task.util.ValidationException
 
 class UserBusiness (var context: Context) {
 
-    private val userRepository = UserRepository.getInstance(context)
+    private val mUserRepository = UserRepository.getInstance(context)
     private val mSecurityPreferences: SecurityPreferences = SecurityPreferences(context)
 
     fun registerUser(user: UserEntity){
         validateRegisterUser(user)
-        user.id = userRepository.insert(user)
+        user.id = mUserRepository.insert(user)
         Toast.makeText(context, context.getString(R.string.userSaved), Toast.LENGTH_LONG).show()
         saveSharedPreferencesUser(user)
     }
@@ -32,7 +32,7 @@ class UserBusiness (var context: Context) {
             throw ValidationException(context.getString(R.string.validationPasswordCharacters))
         if (!user.password.trim().matches(passwordPattern.toRegex()))
             throw ValidationException(context.getString(R.string.validationSecurityPassword))
-        if (userRepository.thisEmailExist(user.email))
+        if (mUserRepository.thisEmailExist(user.email))
             throw ValidationException(context.getString(R.string.emailExist))
     }
 
@@ -43,7 +43,7 @@ class UserBusiness (var context: Context) {
     }
     
     fun login(email: String, password: String): Boolean{
-        val user = userRepository.login(email, password)
+        val user = mUserRepository.login(email, password)
         if (user != null){
             saveSharedPreferencesUser(user)
             return true
