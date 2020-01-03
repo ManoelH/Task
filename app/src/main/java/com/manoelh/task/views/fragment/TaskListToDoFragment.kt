@@ -1,15 +1,20 @@
 package com.manoelh.task.views.fragment
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 import com.manoelh.task.R
+import com.manoelh.task.views.activity.TaskFormActivity
 
-class TaskListToDoFragment : Fragment() {
+class TaskListToDoFragment : Fragment(), View.OnClickListener {
 
+    private lateinit var mContext: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,10 +26,12 @@ class TaskListToDoFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_task_list_to_do, container, false)
+        val view = inflater.inflate(R.layout.fragment_task_list_to_do, container, false)
+        view.findViewById<FloatingActionButton>(R.id.floatButtonAddTask).setOnClickListener(this)
+        mContext = view.context
+        return view
     }
 
 
@@ -46,5 +53,16 @@ class TaskListToDoFragment : Fragment() {
                     putString(ARG_PARAM2, param2)*/
                 }
             }
+    }
+
+    override fun onClick(view: View) {
+        when(view.id){
+            R.id.floatButtonAddTask -> openTaskFormActivity()
+        }
+    }
+
+    private fun openTaskFormActivity(){
+        startActivity(Intent(mContext, TaskFormActivity::class.java))
+
     }
 }

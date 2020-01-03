@@ -82,7 +82,8 @@ class TaskRepository  private constructor(context: Context) {
         return task
     }
 
-    fun insert(task: TaskEntity){
+    fun insert(task: TaskEntity): Long{
+        val id: Long
         try {
             val db = mDatabaseHelper.writableDatabase
             val insertValues = ContentValues()
@@ -91,10 +92,11 @@ class TaskRepository  private constructor(context: Context) {
             insertValues.put(DESCRIPTION, task.description)
             insertValues.put(DUE_DATE, task.dueDate)
             insertValues.put(COMPLETED, task.completed)
-            db.insert(TASK.NAME, null, insertValues)
+            id = db.insert(TASK.NAME, null, insertValues)
         }catch (e: Exception){
             throw e
         }
+        return id
     }
 
     fun update(task: TaskEntity){

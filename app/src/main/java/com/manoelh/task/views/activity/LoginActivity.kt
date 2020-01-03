@@ -23,29 +23,32 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         mUserBusiness = UserBusiness(this)
         mSecurityPreferences = SecurityPreferences(this)
         verifyIfUserIsLogged()
+        textViewCreateAccount.setOnClickListener(this)
     }
 
     override fun onClick(view: View) {
-        if (view.id == R.id.buttonLogin)
-            login()
+        when(view.id){
+            R.id.buttonLogin -> login()
+            R.id.textViewCreateAccount -> openActivity(Intent(this, RegisterActivity::class.java))
+        }
     }
+
     private fun verifyIfUserIsLogged(){
         if (!mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID).isNullOrEmpty())
-            openMainActivity()
+            openActivity(Intent(this, MainActivity::class.java))
     }
 
     private fun login(){
         val email = editTextLoginEmail.text.toString()
         val password = editTextLoginPassword.text.toString()
         if (mUserBusiness.login(email, password))
-            openMainActivity()
+            openActivity(Intent(this, MainActivity::class.java))
 
         else
             Toast.makeText(this, this.getString(R.string.messageWrongEmailOrPassword), Toast.LENGTH_LONG).show()
     }
 
-    private fun openMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun openActivity(intent: Intent) {
         startActivity(intent)
         finish()
     }

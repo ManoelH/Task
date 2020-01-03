@@ -10,9 +10,11 @@ import android.widget.DatePicker
 import android.widget.Toast
 import com.manoelh.task.R
 import com.manoelh.task.business.TaskBusiness
+import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.entity.TaskEntity
+import com.manoelh.task.util.SecurityPreferences
 import kotlinx.android.synthetic.main.activity_task_form.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -24,6 +26,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private lateinit var task: TaskEntity
     private val calendar = Calendar.getInstance()
     private lateinit var prioritySelected: PriorityEntity
+    private lateinit var mSecurityPreferences: SecurityPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +34,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         taskBusiness = TaskBusiness(this)
         setListeners()
         loadSpinner()
+        mSecurityPreferences = SecurityPreferences(this)
     }
 
     private fun loadSpinner(){
@@ -72,8 +76,10 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val description = editTextDescription.text.toString()
         val completed = returnCheckboxValue()
         val dueDate = editTextDate.text.toString()
-        task = TaskEntity(description = description, priority_id = priorityId, completed = completed, dueDate = dueDate, user_id = 0)
-        Toast.makeText(this, "priority id: $priorityId", Toast.LENGTH_LONG).show()
+        //val userId = getUserId()
+        task = TaskEntity(description = description, priority_id = priorityId, completed = completed, dueDate = dueDate, user_id = 1)
+        task.id = taskBusiness.insertTask(task)
+        Toast.makeText(this, "Task: $task was saved!", Toast.LENGTH_LONG).show()
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, dayOfMonth: Int) {
@@ -91,4 +97,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             isChecked = TaskConstants.COMPLETE.NOT
         return isChecked
     }
+
+    private fun getUserId() = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!.toLong()
+
 }

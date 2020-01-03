@@ -24,7 +24,7 @@ class UserBusiness (var context: Context) {
     private fun validateRegisterUser(user: UserEntity){
         val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
         val passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$"
-        if (user.name.isEmpty() || user.email.isEmpty() || user.password.isEmpty())
+        if (user.name.isBlank() || user.email.isBlank() || user.password.isBlank())
             throw ValidationException(context.getString(R.string.userValidationException))
         if (!user.email.trim().matches(emailPattern.toRegex()))
             throw ValidationException(context.getString(R.string.invalidEmail))
