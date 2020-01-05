@@ -43,8 +43,9 @@ class UserRepository private constructor(context: Context){
             val cursor: Cursor
             val db = mDatabaseHelper.readableDatabase
             val columns = arrayOf(EMAIL)
+            val selection = "$EMAIL = ?"
             val selectionArgs = arrayOf(userEmail)
-            cursor = db.query(TABLE_NAME, columns, "$EMAIL = ?", selectionArgs, null, null, null)
+            cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null)
             emailExist = cursor.count > 0
             cursor.close()
         }catch (e: Exception){
@@ -59,8 +60,9 @@ class UserRepository private constructor(context: Context){
             val cursor: Cursor
             val db = mDatabaseHelper.readableDatabase
             val columns = arrayOf(ID, NAME, EMAIL)
+            val selection = "$EMAIL = ? and $PASSWORD = ?"
             val selectionArgs = arrayOf(userEmail, userPassword)
-            cursor = db.query(TABLE_NAME, columns, "$EMAIL = ? and $PASSWORD = ?", selectionArgs,
+            cursor = db.query(TABLE_NAME, columns, selection, selectionArgs,
                 null, null, null)
             if (cursor.count > 0){
                 cursor.moveToFirst()

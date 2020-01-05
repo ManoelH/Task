@@ -33,8 +33,9 @@ class TaskRepository  private constructor(context: Context) {
             val cursor: Cursor
             val db = mDatabaseHelper.readableDatabase
             val columns = arrayOf(ID, USER_ID, PRIORITY_ID, DESCRIPTION, COMPLETED, DUE_DATE)
+            val selection = "$USER_ID = ?"
             val selectionArgs = arrayOf(userId.toString())
-            cursor = db.query(TASK.NAME, columns, "$USER_ID = ?", selectionArgs, null, null, DUE_DATE)
+            cursor = db.query(TASK.NAME, columns, selection, selectionArgs, null, null, DUE_DATE)
             if (cursor.count > 0) {
                 cursor.moveToFirst()
                 var i = 0
@@ -63,8 +64,9 @@ class TaskRepository  private constructor(context: Context) {
             val cursor: Cursor
             val db = mDatabaseHelper.readableDatabase
             val columns = arrayOf(ID, USER_ID, PRIORITY_ID, DESCRIPTION, COMPLETED, DUE_DATE)
+            val selection = "$ID = ?"
             val selectionArgs = arrayOf(id.toString())
-            cursor = db.query(TASK.NAME, columns, "$ID = ?", selectionArgs, null, null, DUE_DATE)
+            cursor = db.query(TASK.NAME, columns, selection, selectionArgs, null, null, DUE_DATE)
             if (cursor.count > 0){
                 cursor.moveToFirst()
                 val taskId = cursor.getLong(cursor.getColumnIndex(ID))

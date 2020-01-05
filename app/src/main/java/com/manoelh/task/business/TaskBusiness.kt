@@ -1,13 +1,14 @@
 package com.manoelh.task.business
 
 import android.content.Context
+import com.manoelh.task.R
 import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.repository.PriorityRepository
 import com.manoelh.task.repository.TaskRepository
 import com.manoelh.task.util.ValidationException
 
-class TaskBusiness (context: Context){
+class TaskBusiness (var context: Context){
 
     private val mPriorityRepository = PriorityRepository.getInstance(context)
     private val mTaskRepository = TaskRepository.getInstance(context)
@@ -21,10 +22,10 @@ class TaskBusiness (context: Context){
         return mTaskRepository.insert(task)
     }
 
-    fun validateTask(task: TaskEntity){
+    private fun validateTask(task: TaskEntity){
         if (task.description.isBlank() || task.dueDate.isBlank())
-            throw ValidationException("Error there are some value(s) empty")
+            throw ValidationException(context.getString(R.string.valuesEmpty))
         else if (task.completed < 0 || task.completed > 1)
-            throw ValidationException("Error value of completed is not valid")
+            throw ValidationException(context.getString(R.string.checkBoxError))
     }
 }

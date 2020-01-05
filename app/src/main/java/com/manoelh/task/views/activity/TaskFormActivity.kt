@@ -77,6 +77,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val completed = returnCheckboxValue()
         val dueDate = editTextDate.text.toString()
         //val userId = getUserId()
+        /* NOTE: to replace the user_id = 1 to userId after */
         task = TaskEntity(description = description, priority_id = priorityId, completed = completed, dueDate = dueDate, user_id = 1)
         task.id = taskBusiness.insertTask(task)
         Toast.makeText(this, "Task: $task was saved!", Toast.LENGTH_LONG).show()
