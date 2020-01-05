@@ -99,6 +99,6 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         return isChecked
     }
 
-    private fun getUserId() = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!.toLong()
+    private fun getUserId() = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)?.toLong()
 
 }

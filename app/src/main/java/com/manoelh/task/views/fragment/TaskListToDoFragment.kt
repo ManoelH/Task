@@ -7,14 +7,24 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 import com.manoelh.task.R
+import com.manoelh.task.adapter.TaskListAdapter
+import com.manoelh.task.business.TaskBusiness
+import com.manoelh.task.constants.SharedPreferencesContants
+import com.manoelh.task.util.SecurityPreferences
+import com.manoelh.task.util.ValidationException
 import com.manoelh.task.views.activity.TaskFormActivity
 
 class TaskListToDoFragment : Fragment(), View.OnClickListener {
 
     private lateinit var mContext: Context
+    private lateinit var mRecyclerView: RecyclerView
+    private lateinit var mTaskBusiness: TaskBusiness
+    private lateinit var mSecurityPreferences: SecurityPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +41,33 @@ class TaskListToDoFragment : Fragment(), View.OnClickListener {
         val view = inflater.inflate(R.layout.fragment_task_list_to_do, container, false)
         view.findViewById<FloatingActionButton>(R.id.floatButtonAddTask).setOnClickListener(this)
         mContext = view.context
+        intanceMyObjectsWithContext()
+        recyclerViewDefinition(view)
         return view
     }
 
+    private fun intanceMyObjectsWithContext() {
+        mTaskBusiness = TaskBusiness(mContext)
+        mSecurityPreferences = SecurityPreferences(mContext)
+    }
+
+    private fun recyclerViewDefinition(view: View) {
+        /*Recycler view steps:
+        * To get recycler view
+        * To define a adapter
+        * To define a layout*/
+        mRecyclerView = view.findViewById(R.id.recyclerViewTasks)
+        val userId = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)
+        val taskList = mTaskBusiness.loadTasks(userId!!.toLong())
+
+        for (i in 0 .. 50){
+            taskList.add(taskList[i].copy(description = "description $i"))
+        }
+
+        mRecyclerView.adapter = TaskListAdapter(taskList)
+
+        mRecyclerView.layoutManager = LinearLayoutManager(mContext)
+    }
 
     companion object {
         /**
