@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.Toast
 import com.manoelh.task.R
+import com.manoelh.task.business.PriorityBusiness
 import com.manoelh.task.business.TaskBusiness
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
@@ -22,23 +23,23 @@ import java.util.*
 class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
     View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
-    private lateinit var taskBusiness: TaskBusiness
-    private lateinit var task: TaskEntity
-    private val calendar = Calendar.getInstance()
-    private lateinit var prioritySelected: PriorityEntity
+    private lateinit var mTaskBusiness: TaskBusiness
+    private lateinit var mPriorityBusiness: PriorityBusiness
+    private lateinit var mTask: TaskEntity
+    private val mCalendar = Calendar.getInstance()
+    private lateinit var mPrioritySelected: PriorityEntity
     private lateinit var mSecurityPreferences: SecurityPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_task_form)
-        taskBusiness = TaskBusiness(this)
         setListeners()
+        intanceMyObjectsWithContext()
         loadSpinner()
-        mSecurityPreferences = SecurityPreferences(this)
     }
 
     private fun loadSpinner(){
-        val priorities = taskBusiness.loadPriorities()
+        val priorities = mPriorityBusiness.loadPriorities()
         val adapter = ArrayAdapter<PriorityEntity>(this, android.R.layout.simple_spinner_dropdown_item, priorities)
         spinnerPriority.adapter = adapter
     }
@@ -49,12 +50,18 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         editTextDate.setOnClickListener(this)
     }
 
+    private fun intanceMyObjectsWithContext(){
+        mTaskBusiness = TaskBusiness(this)
+        mSecurityPreferences = SecurityPreferences(this)
+        mPriorityBusiness = PriorityBusiness(this)
+    }
+
     override fun onNothingSelected(parent: AdapterView<*>) {
 
     }
 
     override fun onItemSelected(adapterView: AdapterView<*>, view: View, position: Int, id: Long) {
-        prioritySelected = spinnerPriority.selectedItem as PriorityEntity
+        mPrioritySelected = spinnerPriority.selectedItem as PriorityEntity
     }
 
     override fun onClick(view: View) {
@@ -65,28 +72,27 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     private fun openDatePicker(){
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_WEEK)
+        val year = mCalendar.get(Calendar.YEAR)
+        val month = mCalendar.get(Calendar.MONTH)
+        val day = mCalendar.get(Calendar.DAY_OF_WEEK)
         DatePickerDialog(this, this, year, month, day).show()
     }
 
     private fun registerTask(){
-        val priorityId = prioritySelected.id
+        val priorityId = mPrioritySelected.id
         val description = editTextDescription.text.toString()
         val completed = returnCheckboxValue()
         val dueDate = editTextDate.text.toString()
-        //val userId = getUserId()
-        /* NOTE: to replace the user_id = 1 to userId after */
-        task = TaskEntity(description = description, priority_id = priorityId, completed = completed, dueDate = dueDate, user_id = 1)
-        task.id = taskBusiness.insertTask(task)
-        Toast.makeText(this, "Task: $task was saved!", Toast.LENGTH_LONG).show()
+        val userId = getUserId()
+        mTask = TaskEntity(description = description, priority_id = priorityId, completed = completed, dueDate = dueDate, user_id = userId)
+        mTask.id = mTaskBusiness.insertTask(mTask)
+        Toast.makeText(this, "Task: $mTask was saved!", Toast.LENGTH_LONG).show()
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, dayOfMonth: Int) {
         val mSimpleFormat = SimpleDateFormat("MM/dd/yyyy")
-        calendar.set(year, month, dayOfMonth)
-        val date = mSimpleFormat.format(calendar.time)
+        mCalendar.set(year, month, dayOfMonth)
+        val date = mSimpleFormat.format(mCalendar.time)
         editTextDate.setText(date)
     }
 
@@ -99,6 +105,6 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         return isChecked
     }
 
-    private fun getUserId() = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)?.toLong()
+    private fun getUserId() = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!.toLong()
 
 }

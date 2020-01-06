@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.manoelh.task.R
 import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.TaskEntity
+import com.manoelh.task.repository.PriorityCache
 
 class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
@@ -17,7 +18,7 @@ class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
     fun bindTask(task: TaskEntity){
         taskDescription.text = task.description
-        priority.text = "still in text..."
+        priority.text = PriorityCache.getCache(task.id)
         dueDate.text = task.dueDate
         if (task.completed == TaskConstants.COMPLETE.YES)
             completed.setImageResource(R.drawable.ic_done)

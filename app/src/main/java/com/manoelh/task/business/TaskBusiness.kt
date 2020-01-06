@@ -10,10 +10,7 @@ import com.manoelh.task.util.ValidationException
 
 class TaskBusiness (var context: Context){
 
-    private val mPriorityRepository = PriorityRepository.getInstance(context)
     private val mTaskRepository = TaskRepository.getInstance(context)
-
-    fun loadPriorities() :MutableList<PriorityEntity> = mPriorityRepository.listPriorities()
 
     fun loadTasks(userId: Long) :MutableList<TaskEntity> = mTaskRepository.listTasks(userId)
 

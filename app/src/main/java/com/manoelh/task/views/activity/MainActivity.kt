@@ -10,7 +10,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import com.manoelh.task.R
+import com.manoelh.task.business.PriorityBusiness
+import com.manoelh.task.business.TaskBusiness
 import com.manoelh.task.constants.SharedPreferencesContants
+import com.manoelh.task.repository.PriorityCache
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.views.fragment.TaskListDoneFragment
 import com.manoelh.task.views.fragment.TaskListToDoFragment
@@ -19,6 +22,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mSecurityPreferences: SecurityPreferences
+    private  lateinit var mPriorityBusiness: PriorityBusiness
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +41,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send*/
             ), drawerLayout
         )
-        mSecurityPreferences = SecurityPreferences(this)
+        intanceMyObjectsWithContext()
+        loadPriorities()
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
         loadFragment(TaskListToDoFragment.newInstance())
         //textViewUserName.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_NAME)
         //textViewUserEmail.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_EMAIL)
+    }
+
+    private fun intanceMyObjectsWithContext(){
+        mSecurityPreferences = SecurityPreferences(this)
+        mPriorityBusiness = PriorityBusiness(this)
+    }
+
+    private fun loadPriorities(){
+        PriorityCache.setCache(mPriorityBusiness.loadPriorities())
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
