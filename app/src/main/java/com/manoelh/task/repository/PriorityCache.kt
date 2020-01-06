@@ -5,7 +5,7 @@ import com.manoelh.task.entity.PriorityEntity
 class PriorityCache private constructor(){
 
     companion object{
-        private var prioritiesHashMap = hashMapOf<Long, String>()
+        private var prioritiesHashMap = hashMapOf<Int, String>()
 
         fun setCache(priorities: List<PriorityEntity>){
             for (item in priorities){
@@ -13,6 +13,6 @@ class PriorityCache private constructor(){
             }
         }
 
-        fun getCache(id: Long) = prioritiesHashMap[id].toString()
+        fun getCache(id: Int) = prioritiesHashMap[id].toString()
     }
 }

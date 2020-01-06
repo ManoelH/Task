@@ -11,12 +11,11 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import com.manoelh.task.R
 import com.manoelh.task.business.PriorityBusiness
-import com.manoelh.task.business.TaskBusiness
 import com.manoelh.task.constants.SharedPreferencesContants
+import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.repository.PriorityCache
 import com.manoelh.task.util.SecurityPreferences
-import com.manoelh.task.views.fragment.TaskListDoneFragment
-import com.manoelh.task.views.fragment.TaskListToDoFragment
+import com.manoelh.task.views.fragment.TaskListFragment
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
 
@@ -45,7 +44,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         loadPriorities()
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
-        loadFragment(TaskListToDoFragment.newInstance())
+        loadFragment(TaskListFragment.newInstance(TaskConstants.COMPLETED.NOT))
         //textViewUserName.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_NAME)
         //textViewUserEmail.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_EMAIL)
     }
@@ -61,8 +60,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.nav_todo -> loadFragment(TaskListToDoFragment.newInstance())
-            R.id.nav_done -> loadFragment(TaskListDoneFragment.newInstance())
+            R.id.nav_todo -> loadFragment(TaskListFragment.newInstance(TaskConstants.COMPLETED.NOT))
+            R.id.nav_done -> loadFragment(TaskListFragment.newInstance(TaskConstants.COMPLETED.YES))
             R.id.nav_logout -> logout()
         }
         return true

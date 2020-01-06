@@ -2,18 +2,24 @@ package com.manoelh.task.business
 
 import android.content.Context
 import com.manoelh.task.R
+import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.repository.PriorityRepository
 import com.manoelh.task.repository.TaskRepository
+import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.util.ValidationException
 
 class TaskBusiness (var context: Context){
 
     private val mTaskRepository = TaskRepository.getInstance(context)
+    private var mSecurityPreferences = SecurityPreferences(context)
 
-    fun loadTasks(userId: Long) :MutableList<TaskEntity> = mTaskRepository.listTasks(userId)
 
+    fun loadTasks(taskFilterCompleted: Int) :MutableList<TaskEntity> {
+        val userId = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)
+        return mTaskRepository.listTasks(userId!!.toLong(), taskFilterCompleted)
+    }
     fun insertTask(task: TaskEntity): Long{
         validateTask(task)
         return mTaskRepository.insert(task)

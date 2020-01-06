@@ -18,9 +18,9 @@ class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
     fun bindTask(task: TaskEntity){
         taskDescription.text = task.description
-        priority.text = PriorityCache.getCache(task.id)
+        priority.text = PriorityCache.getCache(task.priorityId)
         dueDate.text = task.dueDate
-        if (task.completed == TaskConstants.COMPLETE.YES)
+        if (task.completed == TaskConstants.COMPLETED.YES)
             completed.setImageResource(R.drawable.ic_done)
     }
 }

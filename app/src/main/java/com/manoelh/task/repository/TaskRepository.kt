@@ -27,27 +27,20 @@ class TaskRepository  private constructor(context: Context) {
         }
     }
 
-    fun listTasks(userId: Long) :MutableList<TaskEntity>{
+    fun listTasks(userId: Long, taskFilterCompleted: Int) :MutableList<TaskEntity>{
         val tasksList = mutableListOf<TaskEntity>()
         try {
             val cursor: Cursor
             val db = mDatabaseHelper.readableDatabase
             val columns = arrayOf(ID, USER_ID, PRIORITY_ID, DESCRIPTION, COMPLETED, DUE_DATE)
-            val selection = "$USER_ID = ?"
-            val selectionArgs = arrayOf(userId.toString())
+            val selection = "$USER_ID = ? AND $COMPLETED = ?"
+            val selectionArgs = arrayOf(userId.toString(), taskFilterCompleted.toString())
             cursor = db.query(TASK.NAME, columns, selection, selectionArgs, null, null, DUE_DATE)
             if (cursor.count > 0) {
                 cursor.moveToFirst()
                 var i = 0
                 while (i < cursor.count) {
-                    val id = cursor.getLong(cursor.getColumnIndex(ID))
-                    val userID = cursor.getLong(cursor.getColumnIndex(USER_ID))
-                    val priorityID = cursor.getLong(cursor.getColumnIndex(PRIORITY_ID))
-                    val description = cursor.getString(cursor.getColumnIndex(DESCRIPTION))
-                    val completed = cursor.getInt(cursor.getColumnIndex(COMPLETED))
-                    val dueDate = cursor.getString(cursor.getColumnIndex(DUE_DATE))
-                    val task = TaskEntity(id, userID, priorityID, description, completed, dueDate)
-                    tasksList.add(task)
+                    tasksList.add(getTaskOfCursor(cursor))
                     cursor.moveToNext()
                     i++
                 }
@@ -69,13 +62,7 @@ class TaskRepository  private constructor(context: Context) {
             cursor = db.query(TASK.NAME, columns, selection, selectionArgs, null, null, DUE_DATE)
             if (cursor.count > 0){
                 cursor.moveToFirst()
-                val taskId = cursor.getLong(cursor.getColumnIndex(ID))
-                val userID = cursor.getLong(cursor.getColumnIndex(USER_ID))
-                val priorityID = cursor.getLong(cursor.getColumnIndex(PRIORITY_ID))
-                val description = cursor.getString(cursor.getColumnIndex(DESCRIPTION))
-                val completed = cursor.getInt(cursor.getColumnIndex(COMPLETED))
-                val dueDate = cursor.getString(cursor.getColumnIndex(DUE_DATE))
-                task = TaskEntity(taskId, userID, priorityID, description, completed, dueDate)
+                task = getTaskOfCursor(cursor)
             }
             cursor.close()
         }catch (e: java.lang.Exception){
@@ -84,13 +71,23 @@ class TaskRepository  private constructor(context: Context) {
         return task
     }
 
+    private fun getTaskOfCursor(cursor: Cursor): TaskEntity{
+        val taskId = cursor.getLong(cursor.getColumnIndex(ID))
+        val userID = cursor.getLong(cursor.getColumnIndex(USER_ID))
+        val priorityID = cursor.getInt(cursor.getColumnIndex(PRIORITY_ID))
+        val description = cursor.getString(cursor.getColumnIndex(DESCRIPTION))
+        val completed = cursor.getInt(cursor.getColumnIndex(COMPLETED))
+        val dueDate = cursor.getString(cursor.getColumnIndex(DUE_DATE))
+        return TaskEntity(taskId, userID, priorityID, description, completed, dueDate)
+    }
+
     fun insert(task: TaskEntity): Long{
         val id: Long
         try {
             val db = mDatabaseHelper.writableDatabase
             val insertValues = ContentValues()
-            insertValues.put(USER_ID, task.user_id)
-            insertValues.put(PRIORITY_ID, task.priority_id)
+            insertValues.put(USER_ID, task.userId)
+            insertValues.put(PRIORITY_ID, task.priorityId)
             insertValues.put(DESCRIPTION, task.description)
             insertValues.put(DUE_DATE, task.dueDate)
             insertValues.put(COMPLETED, task.completed)
@@ -105,8 +102,8 @@ class TaskRepository  private constructor(context: Context) {
         try {
             val db = mDatabaseHelper.writableDatabase
             val updateValues = ContentValues()
-            updateValues.put(USER_ID, task.user_id)
-            updateValues.put(PRIORITY_ID, task.priority_id)
+            updateValues.put(USER_ID, task.userId)
+            updateValues.put(PRIORITY_ID, task.priorityId)
             updateValues.put(DESCRIPTION, task.description)
             updateValues.put(DUE_DATE, task.dueDate)
             updateValues.put(COMPLETED, task.completed)

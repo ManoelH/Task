@@ -7,10 +7,10 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
-import android.widget.Toast
 import com.manoelh.task.R
 import com.manoelh.task.business.PriorityBusiness
 import com.manoelh.task.business.TaskBusiness
+import com.manoelh.task.constants.PriorityConstants
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.PriorityEntity
@@ -57,7 +57,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     override fun onNothingSelected(parent: AdapterView<*>) {
-
+        mPrioritySelected.id = PriorityConstants.DEFAULT_PRIORITY.ID
     }
 
     override fun onItemSelected(adapterView: AdapterView<*>, view: View, position: Int, id: Long) {
@@ -84,9 +84,9 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val completed = returnCheckboxValue()
         val dueDate = editTextDate.text.toString()
         val userId = getUserId()
-        mTask = TaskEntity(description = description, priority_id = priorityId, completed = completed, dueDate = dueDate, user_id = userId)
+        mTask = TaskEntity(description = description, priorityId = priorityId, completed = completed, dueDate = dueDate, userId = userId)
         mTask.id = mTaskBusiness.insertTask(mTask)
-        Toast.makeText(this, "Task: $mTask was saved!", Toast.LENGTH_LONG).show()
+        finish()
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, dayOfMonth: Int) {
@@ -99,9 +99,9 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private fun returnCheckboxValue(): Int {
         var isChecked: Int
         if (checkBoxCompleted.isChecked)
-            isChecked = TaskConstants.COMPLETE.YES
+            isChecked = TaskConstants.COMPLETED.YES
         else
-            isChecked = TaskConstants.COMPLETE.NOT
+            isChecked = TaskConstants.COMPLETED.NOT
         return isChecked
     }
 

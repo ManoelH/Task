@@ -26,7 +26,7 @@ class PriorityRepository private constructor(context: Context){
     fun listPriorities() :MutableList<PriorityEntity>{
         var priorities = mutableListOf<PriorityEntity>()
         try {
-            var cursor: Cursor
+            val cursor: Cursor
             val db = mDatabaseHelper.readableDatabase
             val columns = arrayOf(ID, DESCRIPTION)
             cursor = db.query(PRIORITY.NAME, columns, null, null, null, null, ID)
@@ -34,7 +34,7 @@ class PriorityRepository private constructor(context: Context){
                 cursor.moveToFirst()
                 var i = 0
                 while (i < cursor.count) {
-                    var id = cursor.getLong(cursor.getColumnIndex(ID))
+                    var id = cursor.getInt(cursor.getColumnIndex(ID))
                     var description = cursor.getString(cursor.getColumnIndex(DESCRIPTION))
                     var priority = PriorityEntity(id, description)
                     priorities.add(priority)
