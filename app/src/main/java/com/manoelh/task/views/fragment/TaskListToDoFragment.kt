@@ -16,7 +16,6 @@ import com.manoelh.task.adapter.TaskListAdapter
 import com.manoelh.task.business.TaskBusiness
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.util.SecurityPreferences
-import com.manoelh.task.util.ValidationException
 import com.manoelh.task.views.activity.TaskFormActivity
 
 class TaskListToDoFragment : Fragment(), View.OnClickListener {
