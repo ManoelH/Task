@@ -5,14 +5,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.manoelh.task.R
 import com.manoelh.task.entity.TaskEntity
+import com.manoelh.task.interfaces.OnTaskListFragmentInteractionListener
 import com.manoelh.task.viewHolder.TaskViewHolder
 
-class TaskListAdapter(val taskList: List<TaskEntity>): RecyclerView.Adapter<TaskViewHolder>() {
+class TaskListAdapter(val taskList: List<TaskEntity>,
+                      val onTaskListFragmentInteractionListener: OnTaskListFragmentInteractionListener):
+                        RecyclerView.Adapter<TaskViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val inflate = LayoutInflater.from(parent.context)
         val view = inflate.inflate(R.layout.tasks_row_list , parent, false)
-        return TaskViewHolder(view)
+        return TaskViewHolder(view, onTaskListFragmentInteractionListener)
     }
 
     override fun getItemCount(): Int {

@@ -7,9 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.manoelh.task.R
 import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.TaskEntity
+import com.manoelh.task.interfaces.OnTaskListFragmentInteractionListener
 import com.manoelh.task.repository.PriorityCache
 
-class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+class TaskViewHolder(itemView: View, val onTaskListFragmentInteractionListener: OnTaskListFragmentInteractionListener)
+    : RecyclerView.ViewHolder(itemView){
 
     private val taskDescription = itemView.findViewById<TextView>(R.id.textViewTaskDescriptionList)
     private val priority = itemView.findViewById<TextView>(R.id.textViewTaskPriorityList)
@@ -22,5 +24,9 @@ class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         dueDate.text = task.dueDate
         if (task.completed == TaskConstants.COMPLETED.YES)
             completed.setImageResource(R.drawable.ic_done)
+
+        taskDescription.setOnClickListener {
+            onTaskListFragmentInteractionListener.onListClick(task.id)
+        }
     }
 }

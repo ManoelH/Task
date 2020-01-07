@@ -15,6 +15,8 @@ import com.manoelh.task.R
 import com.manoelh.task.adapter.TaskListAdapter
 import com.manoelh.task.business.TaskBusiness
 import com.manoelh.task.constants.TaskConstants
+import com.manoelh.task.interfaces.OnTaskListFragmentInteractionListener
+import com.manoelh.task.views.activity.MainActivity
 import com.manoelh.task.views.activity.TaskFormActivity
 
 class TaskListFragment : Fragment(), View.OnClickListener {
@@ -23,11 +25,12 @@ class TaskListFragment : Fragment(), View.OnClickListener {
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mTaskBusiness: TaskBusiness
     private var taskFilterCompleted = TaskConstants.COMPLETED.NOT
+    private lateinit var mTaskListFragmentInteractionListener: OnTaskListFragmentInteractionListener
 
     companion object {
         fun newInstance(taskFilterCompleted: Int) = TaskListFragment().apply {
             arguments = Bundle().apply {
-                putInt(TaskConstants.KEY, taskFilterCompleted)
+                putInt(TaskConstants.KEY.TASK_FILTER, taskFilterCompleted)
             }
         }
     }
@@ -35,7 +38,7 @@ class TaskListFragment : Fragment(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            taskFilterCompleted = it.getInt(TaskConstants.KEY)
+            taskFilterCompleted = it.getInt(TaskConstants.KEY.TASK_FILTER)
         }
     }
 
@@ -48,7 +51,13 @@ class TaskListFragment : Fragment(), View.OnClickListener {
         mContext = view.context
         intanceMyObjectsWithContext()
         mRecyclerView = view.findViewById(R.id.recyclerViewTasks)
-
+        mTaskListFragmentInteractionListener =  object : OnTaskListFragmentInteractionListener{
+            override fun onListClick(taskId: Long) {
+                val bundle = Bundle()
+                bundle.putLong(TaskConstants.KEY.TASK_ID, taskId)
+                openTaskFormActivity(bundle)
+            }
+        }
         return view
     }
 
@@ -62,7 +71,7 @@ class TaskListFragment : Fragment(), View.OnClickListener {
     }
 
     private fun loadRecyclerView() {
-        mRecyclerView.adapter = TaskListAdapter(mTaskBusiness.loadTasks(taskFilterCompleted))
+        mRecyclerView.adapter = TaskListAdapter(mTaskBusiness.loadTasks(taskFilterCompleted), mTaskListFragmentInteractionListener)
         mRecyclerView.layoutManager = LinearLayoutManager(mContext)
     }
 
@@ -74,5 +83,11 @@ class TaskListFragment : Fragment(), View.OnClickListener {
 
     private fun openTaskFormActivity(){
         startActivity(Intent(mContext, TaskFormActivity::class.java))
+    }
+
+    private fun openTaskFormActivity(bundle: Bundle){
+        val intent = Intent(mContext, TaskFormActivity::class.java)
+        intent.putExtras(bundle)
+        startActivity(intent)
     }
 }

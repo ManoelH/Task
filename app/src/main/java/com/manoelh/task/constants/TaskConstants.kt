@@ -6,7 +6,8 @@ class TaskConstants {
         val NOT = 0
     }
 
-    companion object {
-        val KEY = "taskFilter"
+    object KEY{
+        val TASK_FILTER = "taskFilter"
+        val TASK_ID = "taskId"
     }
 }
