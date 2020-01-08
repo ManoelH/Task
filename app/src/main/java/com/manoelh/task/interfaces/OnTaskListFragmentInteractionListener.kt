@@ -4,7 +4,9 @@ import com.manoelh.task.entity.TaskEntity
 
 interface OnTaskListFragmentInteractionListener {
 
-    fun onListClick(taskId: Long){}
+    fun onListClick(taskId: Long)
 
-    fun onDeleteClick(task: TaskEntity){}
+    fun onDeleteClick(task: TaskEntity)
+
+    fun onImageCompletedClick(task: TaskEntity)
 }

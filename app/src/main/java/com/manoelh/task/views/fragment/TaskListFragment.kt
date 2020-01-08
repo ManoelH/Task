@@ -62,6 +62,15 @@ class TaskListFragment : Fragment(), View.OnClickListener {
                 mTaskBusiness.deleteTask(task.id)
                 loadRecyclerView()
             }
+
+            override fun onImageCompletedClick(task: TaskEntity) {
+                if (task.completed == TaskConstants.COMPLETED.YES)
+                    task.completed = TaskConstants.COMPLETED.NOT
+                else
+                    task.completed = TaskConstants.COMPLETED.YES
+                mTaskBusiness.updateTask(task)
+                loadRecyclerView()
+            }
         }
         return view
     }
