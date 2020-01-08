@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
-import androidx.core.view.size
 import com.manoelh.task.R
 import com.manoelh.task.business.PriorityBusiness
 import com.manoelh.task.business.TaskBusiness
@@ -80,7 +79,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private fun returnIndexFromPrioritySpinner(priorityId: Int): Int{
 
         var index = 0
-        for (i in 0..mPriorities.size){
+        for (i in 0 .. mPriorities.size ){
             if (mPriorities[i].id == priorityId){
                 index = i
                 break
@@ -101,7 +100,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         if (view.id == R.id.editTextDate)
             openDatePicker()
         else if (view.id == R.id.buttonRegisterTask)
-            registerTask()
+            verifyActionRegisterTaskButton()
     }
 
     private fun openDatePicker(){
@@ -111,15 +110,47 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         DatePickerDialog(this, this, year, month, day).show()
     }
 
-    private fun registerTask(){
+    private fun verifyActionRegisterTaskButton(){
+        if (mTaskId > 0)
+            updateTask()
+
+        else
+            registerTask()
+
+        finish()
+    }
+
+    private fun updateTask(){
+        val priority = spinnerPriority.selectedItem as PriorityEntity
+        val description = editTextDescription.text.toString()
+        val completed = returnCheckboxValue()
+        val dueDate = editTextDate.text.toString()
+        val userId = getUserId()
+        mTask = TaskEntity(
+            mTask.id,
+            userId,
+            priority.id,
+            description,
+            completed,
+            dueDate
+        )
+        mTaskBusiness.updateTask(mTask)
+    }
+
+    private fun registerTask() {
         val priorityId = mPrioritySelected.id
         val description = editTextDescription.text.toString()
         val completed = returnCheckboxValue()
         val dueDate = editTextDate.text.toString()
         val userId = getUserId()
-        mTask = TaskEntity(description = description, priorityId = priorityId, completed = completed, dueDate = dueDate, userId = userId)
+        mTask = TaskEntity(
+            description = description,
+            priorityId = priorityId,
+            completed = completed,
+            dueDate = dueDate,
+            userId = userId
+        )
         mTask.id = mTaskBusiness.insertTask(mTask)
-        finish()
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, dayOfMonth: Int) {

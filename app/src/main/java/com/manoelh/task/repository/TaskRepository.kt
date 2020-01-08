@@ -45,6 +45,7 @@ class TaskRepository  private constructor(context: Context) {
                     i++
                 }
             }
+            cursor.close()
         }catch (e: Exception){
             return tasksList
         }
@@ -112,6 +113,7 @@ class TaskRepository  private constructor(context: Context) {
             val whereArgs = arrayOf(task.id.toString())
             db.update(TASK.NAME, updateValues, whereClause, whereArgs)
         }catch (e: Exception){
+            e.printStackTrace()
             throw e
         }
     }

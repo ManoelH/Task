@@ -33,4 +33,8 @@ class TaskBusiness (var context: Context){
     }
 
     fun loadTaskById(taskId: Long) = mTaskRepository.getTask(taskId)
+
+    fun updateTask(task: TaskEntity){
+        mTaskRepository.update(task)
+    }
 }
