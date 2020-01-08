@@ -31,4 +31,6 @@ class TaskBusiness (var context: Context){
         else if (task.completed < 0 || task.completed > 1)
             throw ValidationException(context.getString(R.string.checkBoxError))
     }
+
+    fun loadTaskById(taskId: Long) = mTaskRepository.getTask(taskId)
 }

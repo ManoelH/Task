@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
+import androidx.core.view.size
 import com.manoelh.task.R
 import com.manoelh.task.business.PriorityBusiness
 import com.manoelh.task.business.TaskBusiness
@@ -29,6 +30,8 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private val mCalendar = Calendar.getInstance()
     private lateinit var mPrioritySelected: PriorityEntity
     private lateinit var mSecurityPreferences: SecurityPreferences
+    private lateinit var mPriorities: List<PriorityEntity>
+    private var mTaskId = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,12 +39,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         setListeners()
         intanceMyObjectsWithContext()
         loadSpinner()
-    }
-
-    private fun loadSpinner(){
-        val priorities = mPriorityBusiness.loadPriorities()
-        val adapter = ArrayAdapter<PriorityEntity>(this, android.R.layout.simple_spinner_dropdown_item, priorities)
-        spinnerPriority.adapter = adapter
+        loadTaskDataToUpdateFromActivity()
     }
 
     private fun setListeners(){
@@ -54,6 +52,41 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         mTaskBusiness = TaskBusiness(this)
         mSecurityPreferences = SecurityPreferences(this)
         mPriorityBusiness = PriorityBusiness(this)
+    }
+
+    private fun loadSpinner(){
+        mPriorities = mPriorityBusiness.loadPriorities()
+        val adapter = ArrayAdapter<PriorityEntity>(this, android.R.layout.simple_spinner_dropdown_item, mPriorities)
+        spinnerPriority.adapter = adapter
+    }
+
+
+    private fun loadTaskDataToUpdateFromActivity(){
+        val bundle = intent.extras?.getLong(TaskConstants.KEY.TASK_ID)
+        if (bundle!=null){
+            mTaskId = bundle
+            mTask = mTaskBusiness.loadTaskById(mTaskId)!!
+            editTextDescription.setText(mTask.description)
+            when(mTask.completed) {
+                TaskConstants.COMPLETED.YES -> checkBoxCompleted.isChecked = true
+                TaskConstants.COMPLETED.NOT -> checkBoxCompleted.isChecked = false
+            }
+            editTextDate.setText(mTask.dueDate)
+
+            spinnerPriority.setSelection(returnIndexFromPrioritySpinner(mTask.priorityId))
+        }
+    }
+
+    private fun returnIndexFromPrioritySpinner(priorityId: Int): Int{
+
+        var index = 0
+        for (i in 0..mPriorities.size){
+            if (mPriorities[i].id == priorityId){
+                index = i
+                break
+            }
+        }
+        return index
     }
 
     override fun onNothingSelected(parent: AdapterView<*>) {
