@@ -15,8 +15,8 @@ import com.manoelh.task.R
 import com.manoelh.task.adapter.TaskListAdapter
 import com.manoelh.task.business.TaskBusiness
 import com.manoelh.task.constants.TaskConstants
+import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.interfaces.OnTaskListFragmentInteractionListener
-import com.manoelh.task.views.activity.MainActivity
 import com.manoelh.task.views.activity.TaskFormActivity
 
 class TaskListFragment : Fragment(), View.OnClickListener {
@@ -56,6 +56,11 @@ class TaskListFragment : Fragment(), View.OnClickListener {
                 val bundle = Bundle()
                 bundle.putLong(TaskConstants.KEY.TASK_ID, taskId)
                 openTaskFormActivity(bundle)
+            }
+
+            override fun onDeleteClick(task: TaskEntity) {
+                mTaskBusiness.deleteTask(task.id)
+                loadRecyclerView()
             }
         }
         return view

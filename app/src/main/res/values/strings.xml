@@ -39,4 +39,5 @@
     <string name="description">Description</string>
     <string name="priority">Priority</string>
     <string name="date">Date</string>
+    <string name="titleAlertDialogDeleteTask">Delete task</string>
 </resources>

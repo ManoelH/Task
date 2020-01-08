@@ -37,4 +37,8 @@ class TaskBusiness (var context: Context){
     fun updateTask(task: TaskEntity){
         mTaskRepository.update(task)
     }
+
+    fun deleteTask(taskId: Long){
+        mTaskRepository.delete(taskId)
+    }
 }

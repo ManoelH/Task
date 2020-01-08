@@ -1,8 +1,11 @@
 package com.manoelh.task.viewHolder
 
+import android.content.Context
+import android.content.DialogInterface
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.manoelh.task.R
 import com.manoelh.task.constants.TaskConstants
@@ -10,7 +13,7 @@ import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.interfaces.OnTaskListFragmentInteractionListener
 import com.manoelh.task.repository.PriorityCache
 
-class TaskViewHolder(itemView: View, val onTaskListFragmentInteractionListener: OnTaskListFragmentInteractionListener)
+class TaskViewHolder(itemView: View, val context: Context,  val onTaskListFragmentInteractionListener: OnTaskListFragmentInteractionListener)
     : RecyclerView.ViewHolder(itemView){
 
     private val taskDescription = itemView.findViewById<TextView>(R.id.textViewTaskDescriptionList)
@@ -27,6 +30,18 @@ class TaskViewHolder(itemView: View, val onTaskListFragmentInteractionListener: 
 
         taskDescription.setOnClickListener {
             onTaskListFragmentInteractionListener.onListClick(task.id)
+        }
+
+        taskDescription.setOnLongClickListener {
+            AlertDialog.Builder(context)
+                .setTitle(context.getString(R.string.titleAlertDialogDeleteTask))
+                .setMessage("Do you really sure that you want delete the task ${task.description}?")
+                .setIcon(R.drawable.ic_delete)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Confirm") { dialog, which ->
+                    onTaskListFragmentInteractionListener.onDeleteClick(task)}.show()
+
+            true
         }
     }
 }
