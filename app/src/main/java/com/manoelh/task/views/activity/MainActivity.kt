@@ -72,21 +72,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
         val month = calendar.get(Calendar.MONTH)
 
-        var date = ""
-
-        for (i in 1..days.size){
-            if (dayOfWeek == i){
-                date+="${days[i-1]}, "
-                break
-            }
-        }
-
-        for (j in 0..11){
-            if (month == j){
-                date += "${months[j]} $dayOfMonth"
-                break
-            }
-        }
+        var date = "${days[dayOfWeek - 1]}, ${months[month]} $dayOfMonth"
         textViewCurrentDate.text = date
     }
 
