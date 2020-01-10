@@ -29,27 +29,31 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(view: View) {
         when(view.id){
             R.id.buttonLogin -> login()
-            R.id.textViewCreateAccount -> openActivity(Intent(this, RegisterActivity::class.java))
+            R.id.textViewCreateAccount -> openRegisterActivity()
         }
     }
 
     private fun verifyIfUserIsLogged(){
         if (!mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID).isNullOrEmpty())
-            openActivity(Intent(this, MainActivity::class.java))
+            openMainActivity()
     }
 
     private fun login(){
         val email = editTextLoginEmail.text.toString()
         val password = editTextLoginPassword.text.toString()
         if (mUserBusiness.login(email, password))
-            openActivity(Intent(this, MainActivity::class.java))
+            openMainActivity()
 
         else
             Toast.makeText(this, this.getString(R.string.messageWrongEmailOrPassword), Toast.LENGTH_LONG).show()
     }
 
-    private fun openActivity(intent: Intent) {
-        startActivity(intent)
+    private fun openMainActivity() {
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
+    }
+
+    private fun openRegisterActivity(){
+        startActivity(Intent(this, RegisterActivity::class.java))
     }
 }

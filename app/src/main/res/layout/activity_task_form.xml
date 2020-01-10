@@ -9,12 +9,15 @@
 
     <EditText
         android:id="@+id/editTextDescription"
+        style="@style/mEditTextColorsCustom"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:ems="10"
         android:hint="Description"
         android:inputType="textPersonName"
+        android:lines="2"
+        android:singleLine="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.551"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,32 +25,57 @@
 
     <Spinner
         android:id="@+id/spinnerPriority"
-        android:layout_width="0dp"
+        android:layout_width="382dp"
         android:layout_height="26dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextDescription" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <View
+        android:id="@+id/viewLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="24dp"
+        android:background="@color/colorGrayLight"
+        android:backgroundTint="@color/colorGrayLight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerPriority" />
 
     <CheckBox
         android:id="@+id/checkBoxCompleted"
+        style="@style/mEditTextColorsCustom"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="39dp"
+        android:button="@drawable/checkbox_selector"
         android:text="Completed"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerPriority" />
+        app:layout_constraintTop_toBottomOf="@+id/viewLine" />
+
+    <View
+        android:id="@+id/viewLine2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="24dp"
+        android:background="@color/colorGrayLight"
+        android:backgroundTint="@color/colorGrayLight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxCompleted" />
 
     <Button
         android:id="@+id/buttonSaveTask"
         android:layout_width="240dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="52dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
         android:background="@drawable/button_shape"
         android:text="@string/buttonRegister"
         android:textColor="@color/colorLight"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,6 +83,7 @@
 
     <EditText
         android:id="@+id/editTextDate"
+        style="@style/mEditTextColorsCustom"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -64,5 +93,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxCompleted" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/priority"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,5 +7,5 @@
     <color name="colorGrayLight">#CECECE</color>
     <color name="defaultBackground">#F6F6F6</color>
     <color name="colorGrayText">#C1C1C1</color>
-    <color name="colorDescriptionText">#535353</color>
+    <color name="colorText">#535353</color>
 </resources>
