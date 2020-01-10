@@ -13,7 +13,6 @@
     <string name="menu_logout">Logout</string>
     <string name="login">Login</string>
     <string name="title_activity_register">Register user</string>
-    <string name="register">Register</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="prompt_name">Name</string>
@@ -40,4 +39,6 @@
     <string name="priority">Priority</string>
     <string name="date">Date</string>
     <string name="titleAlertDialogDeleteTask">Delete task</string>
+    <string name="buttonEdit">Edit</string>
+    <string name="buttonRegister">Register</string>
 </resources>

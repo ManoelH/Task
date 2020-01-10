@@ -39,11 +39,12 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         intanceMyObjectsWithContext()
         loadSpinner()
         loadTaskDataToUpdateFromActivity()
+        loadTextButtonSaveTask()
     }
 
     private fun setListeners(){
         spinnerPriority.onItemSelectedListener = this
-        buttonRegisterTask.setOnClickListener(this)
+        buttonSaveTask.setOnClickListener(this)
         editTextDate.setOnClickListener(this)
     }
 
@@ -88,6 +89,13 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         return index
     }
 
+    private fun loadTextButtonSaveTask(){
+        if(mTaskId > 0)
+            buttonSaveTask.text = getString(R.string.buttonEdit)
+        else
+            buttonSaveTask.text = getString(R.string.buttonRegister)
+    }
+
     override fun onNothingSelected(parent: AdapterView<*>) {
         mPrioritySelected.id = PriorityConstants.DEFAULT_PRIORITY.ID
     }
@@ -99,7 +107,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     override fun onClick(view: View) {
         if (view.id == R.id.editTextDate)
             openDatePicker()
-        else if (view.id == R.id.buttonRegisterTask)
+        else if (view.id == R.id.buttonSaveTask)
             verifyActionRegisterTaskButton()
     }
 

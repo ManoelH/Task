@@ -12,7 +12,7 @@
         android:layout_width="370dp"
         android:layout_height="42dp"
         android:layout_marginTop="32dp"
-        android:drawableStart="@drawable/ic_email"
+        android:drawableStart="@drawable/ic_mail"
         android:drawablePadding="8dp"
         android:ems="10"
         android:hint="@string/prompt_email"
@@ -20,7 +20,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextName" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextName"
+        style="@style/TextColorsCustom"/>
 
     <EditText
         android:id="@+id/editTextPassword"
@@ -35,29 +36,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextEmail"
+        style="@style/TextColorsCustom"/>
 
     <EditText
         android:id="@+id/editTextName"
         android:layout_width="370dp"
         android:layout_height="42dp"
         android:layout_marginTop="84dp"
-        android:drawableStart="@drawable/ic_account"
+        android:drawableStart="@drawable/ic_user"
         android:drawablePadding="8dp"
         android:ems="10"
         android:hint="@string/prompt_name"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/TextColorsCustom"/>
 
     <Button
         android:id="@+id/buttonRegister"
         android:layout_width="240dp"
         android:layout_height="45dp"
         android:layout_marginTop="56dp"
-        android:background="@drawable/background_register_button"
-        android:text="@string/register"
+        android:background="@drawable/button_shape"
+        android:text="@string/buttonRegister"
         android:textColor="@color/colorLight"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
