@@ -11,7 +11,10 @@
         android:theme="@style/AppTheme">
         <activity android:name=".views.activity.TaskFormActivity"/>
 
-        <activity android:name=".views.activity.LoginActivity">
+        <activity
+            android:name=".views.activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar.fullScreen"
+            android:screenOrientation="sensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
