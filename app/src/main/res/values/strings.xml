@@ -41,4 +41,7 @@
     <string name="titleAlertDialogDeleteTask">Delete task</string>
     <string name="buttonEdit">Edit</string>
     <string name="buttonRegister">Register</string>
+    <string name="do_you_new_here">Do you new here?</string>
+    <string name="click_here">Click here!</string>
+    <string name="completed">Completed</string>
 </resources>
