@@ -3,6 +3,9 @@ package com.manoelh.task.repository
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.constants.DatabaseConstants
 import com.manoelh.task.constants.DatabaseConstants.TABLES.USER.COLUMNS.PASSWORD
 import com.manoelh.task.constants.DatabaseConstants.TABLES.USER.COLUMNS.EMAIL
@@ -16,6 +19,7 @@ class UserRepository private constructor(context: Context){
 
     private val mDatabaseHelper: DatabaseHelper = DatabaseHelper(context)
     private val TABLE_NAME = DatabaseConstants.TABLES.USER.NAME
+    private val db = FirebaseFirestore.getInstance()
 
     companion object{
         private var INSTANCE: UserRepository? = null
@@ -28,13 +32,25 @@ class UserRepository private constructor(context: Context){
         }
     }
 
-    fun insert(user: UserEntity): Long{
-        val db = mDatabaseHelper.writableDatabase
+    fun insert(name: String, id: String){
+        val userDatabase =
+            hashMapOf(DatabaseConstants.TABLES.USER.FIREBASE_COLUMNS.NAME to name,
+                      DatabaseConstants.TABLES.USER.FIREBASE_COLUMNS.AUTHENTICATION_ID to id )
+        db.collection("users")
+            .add(userDatabase)
+            .addOnSuccessListener { documentReference ->
+                Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                Log.w(ContentValues.TAG, "Error adding document", e)
+            }
+
+        /*val db = mDatabaseHelper.writableDatabase
         val insertValues = ContentValues()
         insertValues.put(NAME, user.name)
         insertValues.put(EMAIL, user.email)
         insertValues.put(PASSWORD, user.password)
-        return db.insert(TABLE_NAME, null, insertValues)
+        return db.insert(TABLE_NAME, null, insertValues)*/
     }
 
     fun thisEmailExist(userEmail: String): Boolean{
@@ -69,7 +85,7 @@ class UserRepository private constructor(context: Context){
                 val id = cursor.getLong(cursor.getColumnIndex(ID))
                 val name = cursor.getString(cursor.getColumnIndex(NAME))
                 val email = cursor.getString(cursor.getColumnIndex(EMAIL))
-                user = UserEntity(id, name, email)
+                user = UserEntity("", name, email)
             }
             cursor.close()
         }catch (e: Exception){

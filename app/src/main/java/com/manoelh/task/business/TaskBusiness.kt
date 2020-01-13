@@ -18,7 +18,7 @@ class TaskBusiness (var context: Context){
 
     fun loadTasks(taskFilterCompleted: Int) :MutableList<TaskEntity> {
         val userId = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)
-        return mTaskRepository.listTasks(userId!!.toLong(), taskFilterCompleted)
+        return mTaskRepository.listTasks(1, taskFilterCompleted)
     }
     fun insertTask(task: TaskEntity): Long{
         validateTask(task)

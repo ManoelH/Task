@@ -11,6 +11,10 @@ class DatabaseConstants {
                 val EMAIL = "email"
                 val PASSWORD = "password"
             }
+            object FIREBASE_COLUMNS{
+                val NAME = "name"
+                val AUTHENTICATION_ID = "authentication_id"
+            }
         }
 
         object PRIORITY {

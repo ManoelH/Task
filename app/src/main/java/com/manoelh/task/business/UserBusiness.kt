@@ -15,11 +15,12 @@ class UserBusiness (var context: Context) {
     private val mUserRepository = UserRepository.getInstance(context)
     private val mSecurityPreferences: SecurityPreferences = SecurityPreferences(context)
 
-    fun registerUser(user: UserEntity){
-        validateRegisterUser(user)
-        user.id = mUserRepository.insert(user)
-        Toast.makeText(context, context.getString(R.string.userSaved), Toast.LENGTH_LONG).show()
-        saveSharedPreferencesUser(user)
+    fun registerUser(user: UserEntity, isAuthenticated: Boolean){
+        if(isAuthenticated){
+            validateRegisterUser(user)
+            mUserRepository.insert(user.name, user.id)
+            Toast.makeText(context, context.getString(R.string.userSaved), Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun validateRegisterUser(user: UserEntity){
@@ -35,8 +36,8 @@ class UserBusiness (var context: Context) {
             throw ValidationException(context.getString(R.string.emailExist))
     }
 
-    private fun saveSharedPreferencesUser(user: UserEntity){
-        mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_ID, user.id.toString())
+    fun saveSharedPreferencesUser(user: UserEntity){
+        mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_ID, user.id)
         mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_NAME, user.name)
         mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_EMAIL, user.email)
     }
