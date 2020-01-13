@@ -1,10 +1,14 @@
 package com.manoelh.task.views.activity
 
+import android.content.ContentValues
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.manoelh.task.R
 import com.manoelh.task.business.UserBusiness
 import com.manoelh.task.constants.SharedPreferencesContants
@@ -15,6 +19,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var mUserBusiness: UserBusiness
     private lateinit var mSecurityPreferences: SecurityPreferences
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +29,18 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         mSecurityPreferences = SecurityPreferences(this)
         verifyIfUserIsLogged()
         textViewCreateAccount.setOnClickListener(this)
+        auth = FirebaseAuth.getInstance()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val currentUser = auth.currentUser
+        updateUI(currentUser)
+    }
+
+    private fun updateUI(user: FirebaseUser?) {
+        if (user != null)
+            openMainActivity()
     }
 
     override fun onClick(view: View) {
@@ -41,11 +58,29 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private fun login(){
         val email = editTextLoginEmail.text.toString()
         val password = editTextLoginPassword.text.toString()
-        if (mUserBusiness.login(email, password))
-            openMainActivity()
+       // if (mUserBusiness.login(email, password))
+            userAuthentication(email, password)
 
-        else
-            Toast.makeText(this, this.getString(R.string.messageWrongEmailOrPassword), Toast.LENGTH_LONG).show()
+        //else
+         //   Toast.makeText(this, this.getString(R.string.messageWrongEmailOrPassword), Toast.LENGTH_LONG).show()
+    }
+
+    private fun userAuthentication(email: String, password: String){
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(ContentValues.TAG, "signInWithEmail:success")
+                    val user = auth.currentUser
+                    updateUI(user)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(ContentValues.TAG, "signInWithEmail:failure", task.exception)
+                    Toast.makeText(baseContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show()
+                    updateUI(null)
+                }
+            }
     }
 
     private fun openMainActivity() {

@@ -7,6 +7,7 @@ import com.manoelh.task.constants.DatabaseConstants
 
 class DatabaseHelper (context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION){
 
+    //THIS CLASS WILL NOT BE USED
     companion object {
         private val DATABASE_NAME = "task.db"
         private val DATABASE_VERSION = 2

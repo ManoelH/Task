@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.manoelh.task.R
 import com.manoelh.task.business.PriorityBusiness
 import com.manoelh.task.constants.SharedPreferencesContants
@@ -102,6 +103,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mSecurityPreferences.removeStoreString(SharedPreferencesContants.KEYS.USER_ID)
         mSecurityPreferences.removeStoreString(SharedPreferencesContants.KEYS.USER_NAME)
         mSecurityPreferences.removeStoreString(SharedPreferencesContants.KEYS.USER_EMAIL)
+        FirebaseAuth.getInstance().signOut()
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
