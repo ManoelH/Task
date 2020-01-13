@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import com.manoelh.task.R
 import com.manoelh.task.business.UserBusiness
 import com.manoelh.task.entity.UserEntity
+import com.manoelh.task.repository.DatabaseConnectionFirebase
 import com.manoelh.task.util.ValidationException
 import kotlinx.android.synthetic.main.activity_register.*
 
@@ -47,8 +48,10 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
                 val email = editTextEmail.text.toString()
                 val password = editTextPassword.text.toString()
                 user = UserEntity(name = name, email = email, password = password)
-                userBusiness.registerUser(user)
-                val intent = Intent(this, MainActivity::class.java)
+                val db = DatabaseConnectionFirebase()
+                db.registerUser(user)
+//                userBusiness.registerUser(user)
+//                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
             }
