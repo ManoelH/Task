@@ -1,7 +1,10 @@
 package com.manoelh.task.repository
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.util.Log
+import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.constants.DatabaseConstants.TABLES.PRIORITY.COLUMNS.ID
 import com.manoelh.task.constants.DatabaseConstants.TABLES.PRIORITY.COLUMNS.DESCRIPTION
 import com.manoelh.task.constants.DatabaseConstants.TABLES.PRIORITY
@@ -11,6 +14,7 @@ import com.manoelh.task.entity.PriorityEntity
 class PriorityRepository private constructor(context: Context){
 
     private val mDatabaseHelper = DatabaseHelper(context)
+    private val db = FirebaseFirestore.getInstance()
 
     companion object{
         private var INSTANCE: PriorityRepository? = null
@@ -25,8 +29,21 @@ class PriorityRepository private constructor(context: Context){
 
     fun listPriorities() :MutableList<PriorityEntity>{
         var priorities = mutableListOf<PriorityEntity>()
+
         try {
-            val cursor: Cursor
+            db.collection("priorities")
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
+                        val priorityEntity = PriorityEntity(document.id, document.get("description") as String)
+                        priorities.add(priorityEntity)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(ContentValues.TAG, "Error getting documents.", exception)
+                }
+            /*val cursor: Cursor
             val db = mDatabaseHelper.readableDatabase
             val columns = arrayOf(ID, DESCRIPTION)
             cursor = db.query(PRIORITY.NAME, columns, null, null, null, null, ID)
@@ -41,7 +58,7 @@ class PriorityRepository private constructor(context: Context){
                     cursor.moveToNext()
                     i++
                 }
-            }
+            }*/
         }catch (e: Exception){
             return priorities
         }

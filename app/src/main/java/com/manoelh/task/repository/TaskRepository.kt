@@ -75,7 +75,7 @@ class TaskRepository  private constructor(context: Context) {
     private fun getTaskOfCursor(cursor: Cursor): TaskEntity{
         val taskId = cursor.getLong(cursor.getColumnIndex(ID))
         val userID = cursor.getLong(cursor.getColumnIndex(USER_ID))
-        val priorityID = cursor.getInt(cursor.getColumnIndex(PRIORITY_ID))
+        val priorityID = cursor.getString(cursor.getColumnIndex(PRIORITY_ID))
         val description = cursor.getString(cursor.getColumnIndex(DESCRIPTION))
         val completed = cursor.getInt(cursor.getColumnIndex(COMPLETED))
         val dueDate = cursor.getString(cursor.getColumnIndex(DUE_DATE))

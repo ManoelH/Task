@@ -77,7 +77,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         }
     }
 
-    private fun returnIndexFromPrioritySpinner(priorityId: Int): Int{
+    private fun returnIndexFromPrioritySpinner(priorityId: String): Int{
 
         var index = 0
         for (i in 0 .. mPriorities.size ){
