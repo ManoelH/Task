@@ -10,12 +10,7 @@ class TaskBusiness (var context: Context){
 
     private val mTaskRepository = TaskRepository.getInstance(context)
 
-    fun insertTask(task: TaskEntity): String{
-        validateTask(task)
-        return mTaskRepository.insert(task)
-    }
-
-    private fun validateTask(task: TaskEntity){
+    fun validateTask(task: TaskEntity){
         if (task.description.isBlank())
             throw ValidationException(context.getString(R.string.valuesEmpty))
     }

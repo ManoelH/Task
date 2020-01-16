@@ -108,23 +108,6 @@ class TaskRepository  private constructor(context: Context) {
         return TaskEntity(taskId, userID, priorityID, description, completed, dueDate)
     }*/
 
-    fun insert(task: TaskEntity): String{
-        val id: Long
-        try {
-            val db = mDatabaseHelper.writableDatabase
-            val insertValues = ContentValues()
-            insertValues.put(USER_ID, task.userId)
-            insertValues.put(PRIORITY_ID, task.priorityId)
-            insertValues.put(DESCRIPTION, task.description)
-            //insertValues.put(DUE_DATE, task.dueDate)
-            insertValues.put(COMPLETED, task.completed)
-            id = db.insert(TASK.NAME, null, insertValues)
-        }catch (e: Exception){
-            throw e
-        }
-        return id.toString()
-    }
-
     fun update(task: TaskEntity){
         try {
             val db = mDatabaseHelper.writableDatabase

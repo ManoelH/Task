@@ -1,14 +1,19 @@
 package com.manoelh.task.views.activity
 
 import android.app.DatePickerDialog
+import android.content.ContentValues
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
+import android.widget.Toast
+import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
 import com.manoelh.task.business.TaskBusiness
+import com.manoelh.task.constants.DatabaseConstants
 import com.manoelh.task.constants.PriorityConstants
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
@@ -16,6 +21,7 @@ import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.repository.PriorityCache
 import com.manoelh.task.util.SecurityPreferences
+import com.manoelh.task.util.ValidationException
 import kotlinx.android.synthetic.main.activity_task_form.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -30,6 +36,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private lateinit var mSecurityPreferences: SecurityPreferences
     private lateinit var mPriorities: List<PriorityEntity>
     private var mTaskId = 0L
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,11 +126,8 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private fun verifyActionRegisterTaskButton(){
         if (mTaskId > 0)
             updateTask()
-
         else
-            registerTask()
-
-        finish()
+            setTaskAtributes()
     }
 
     private fun updateTask(){
@@ -144,24 +148,52 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             //dueDate
         )
         mTaskBusiness.updateTask(mTask)
+        finish()
     }
 
-    private fun registerTask() {
+    private fun setTaskAtributes() {
         val priorityId = mPrioritySelected.id
         val description = editTextDescription.text.toString()
         val completed = returnCheckboxValue()
-        val dueDate = editTextDate.text.toString()
+        val dueDate = SimpleDateFormat("MM/dd/yyyy").parse(editTextDate.text.toString())
         val userId = getUserId()
 
-        val date = Calendar.getInstance()
         mTask = TaskEntity(
             description = description,
             priorityId = priorityId,
             completed = completed,
-            dueDate = date.time,
+            dueDate = dueDate,
             userId = userId
         )
-        mTask.id = mTaskBusiness.insertTask(mTask)
+        insertTask(mTask)
+    }
+
+    private fun insertTask(taskEntity: TaskEntity){
+        try {
+            mTaskBusiness.validateTask(taskEntity)
+            val taskDatabase =
+                hashMapOf(
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.AUTHENTICATION_ID to taskEntity.userId,
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.COMPLETED to taskEntity.completed,
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.DESCRIPTION to taskEntity.description,
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.DUE_DATE to taskEntity.dueDate,
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.PRIORITY_ID to taskEntity.priorityId)
+            db.collection("tasks")
+                .add(taskDatabase)
+                .addOnSuccessListener { documentReference ->
+                    Log.d(
+                        ContentValues.TAG,
+                        "DocumentSnapshot added with ID: ${documentReference.id}")
+                    Toast.makeText(this, this.getString(R.string.taskSaved), Toast.LENGTH_LONG)
+                        .show()
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    Log.w(ContentValues.TAG, "Error adding document", e)
+                }
+        }catch (ve: ValidationException){
+            Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, dayOfMonth: Int) {

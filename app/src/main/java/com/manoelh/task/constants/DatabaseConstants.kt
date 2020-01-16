@@ -11,10 +11,6 @@ class DatabaseConstants {
                 val EMAIL = "email"
                 val PASSWORD = "password"
             }
-            object FIREBASE_COLUMNS{
-                val NAME = "name"
-                val AUTHENTICATION_ID = "authentication_id"
-            }
         }
 
         object PRIORITY {
@@ -34,6 +30,25 @@ class DatabaseConstants {
                 val DESCRIPTION = "description"
                 val DUE_DATE = "due_date"
                 val COMPLETED = "completed"
+            }
+        }
+    }
+
+    object FIREBASE_TABLES{
+        object USERS{
+            object COLUMNS{
+            val NAME = "name"
+            val AUTHENTICATION_ID = "authentication_id"
+            }
+        }
+
+        object TASKS{
+            object COLUMNS{
+                val AUTHENTICATION_ID = "authentication_id"
+                val COMPLETED = "completed"
+                val DESCRIPTION = "description"
+                val DUE_DATE = "due_date"
+                val PRIORITY_ID = "priority_id"
             }
         }
     }
