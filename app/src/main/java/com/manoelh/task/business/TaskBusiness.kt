@@ -13,23 +13,15 @@ import com.manoelh.task.util.ValidationException
 class TaskBusiness (var context: Context){
 
     private val mTaskRepository = TaskRepository.getInstance(context)
-    private var mSecurityPreferences = SecurityPreferences(context)
 
-
-    fun loadTasks(taskFilterCompleted: Int) :MutableList<TaskEntity> {
-        val userId = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)
-        return mTaskRepository.listTasks(1, taskFilterCompleted)
-    }
-    fun insertTask(task: TaskEntity): Long{
+    fun insertTask(task: TaskEntity): String{
         validateTask(task)
         return mTaskRepository.insert(task)
     }
 
     private fun validateTask(task: TaskEntity){
-        if (task.description.isBlank() || task.dueDate.isBlank())
+        if (task.description.isBlank())
             throw ValidationException(context.getString(R.string.valuesEmpty))
-        else if (task.completed < 0 || task.completed > 1)
-            throw ValidationException(context.getString(R.string.checkBoxError))
     }
 
     fun loadTaskById(taskId: Long) = mTaskRepository.getTask(taskId)

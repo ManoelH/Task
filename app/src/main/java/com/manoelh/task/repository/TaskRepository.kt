@@ -3,6 +3,8 @@ package com.manoelh.task.repository
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.util.Log
+import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.constants.DatabaseConstants.TABLES.TASK.COLUMNS.ID
 import com.manoelh.task.constants.DatabaseConstants.TABLES.TASK.COLUMNS.USER_ID
@@ -11,10 +13,13 @@ import com.manoelh.task.constants.DatabaseConstants.TABLES.TASK.COLUMNS.DESCRIPT
 import com.manoelh.task.constants.DatabaseConstants.TABLES.TASK.COLUMNS.COMPLETED
 import com.manoelh.task.constants.DatabaseConstants.TABLES.TASK.COLUMNS.DUE_DATE
 import com.manoelh.task.constants.DatabaseConstants.TABLES.TASK
+import com.manoelh.task.entity.PriorityEntity
+import com.manoelh.task.util.SecurityPreferences
 
 class TaskRepository  private constructor(context: Context) {
 
     private val mDatabaseHelper = DatabaseHelper(context)
+    private val db = FirebaseFirestore.getInstance()
 
     companion object{
         private var INSTANCE: TaskRepository? = null
@@ -27,10 +32,31 @@ class TaskRepository  private constructor(context: Context) {
         }
     }
 
-    fun listTasks(userId: Long, taskFilterCompleted: Int) :MutableList<TaskEntity>{
+    fun listTasks(userId: String, taskFilterCompleted: Boolean) :MutableList<TaskEntity>{
         val tasksList = mutableListOf<TaskEntity>()
         try {
-            val cursor: Cursor
+
+            db.collection("tasks").whereEqualTo("authentication_id", userId)
+                .whereEqualTo("completed", taskFilterCompleted).get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
+                        val taskEntity = TaskEntity(
+                            document.id,
+                            userId,
+                            document.get("priority_id").toString(),
+                            document.get("description").toString(),
+                            document.getBoolean("completed")!!,
+                            document.getDate("due_date")!!
+                        )
+                        tasksList.add(taskEntity)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(ContentValues.TAG, "Error getting documents.", exception)
+                }
+
+            /*val cursor: Cursor
             val db = mDatabaseHelper.readableDatabase
             val columns = arrayOf(ID, USER_ID, PRIORITY_ID, DESCRIPTION, COMPLETED, DUE_DATE)
             val selection = "$USER_ID = ? AND $COMPLETED = ?"
@@ -45,7 +71,7 @@ class TaskRepository  private constructor(context: Context) {
                     i++
                 }
             }
-            cursor.close()
+            cursor.close()*/
         }catch (e: Exception){
             return tasksList
         }
@@ -63,7 +89,7 @@ class TaskRepository  private constructor(context: Context) {
             cursor = db.query(TASK.NAME, columns, selection, selectionArgs, null, null, DUE_DATE)
             if (cursor.count > 0){
                 cursor.moveToFirst()
-                task = getTaskOfCursor(cursor)
+               // task = getTaskOfCursor(cursor)
             }
             cursor.close()
         }catch (e: java.lang.Exception){
@@ -72,17 +98,17 @@ class TaskRepository  private constructor(context: Context) {
         return task
     }
 
-    private fun getTaskOfCursor(cursor: Cursor): TaskEntity{
-        val taskId = cursor.getLong(cursor.getColumnIndex(ID))
-        val userID = cursor.getLong(cursor.getColumnIndex(USER_ID))
+/*    private fun getTaskOfCursor(cursor: Cursor): TaskEntity{
+        val taskId = cursor.getString(cursor.getColumnIndex(ID))
+        val userID = cursor.getString(cursor.getColumnIndex(USER_ID))
         val priorityID = cursor.getString(cursor.getColumnIndex(PRIORITY_ID))
         val description = cursor.getString(cursor.getColumnIndex(DESCRIPTION))
         val completed = cursor.getInt(cursor.getColumnIndex(COMPLETED))
-        val dueDate = cursor.getString(cursor.getColumnIndex(DUE_DATE))
+        val dueDate = cursor.getDa(cursor.getColumnIndex(DUE_DATE))
         return TaskEntity(taskId, userID, priorityID, description, completed, dueDate)
-    }
+    }*/
 
-    fun insert(task: TaskEntity): Long{
+    fun insert(task: TaskEntity): String{
         val id: Long
         try {
             val db = mDatabaseHelper.writableDatabase
@@ -90,13 +116,13 @@ class TaskRepository  private constructor(context: Context) {
             insertValues.put(USER_ID, task.userId)
             insertValues.put(PRIORITY_ID, task.priorityId)
             insertValues.put(DESCRIPTION, task.description)
-            insertValues.put(DUE_DATE, task.dueDate)
+            //insertValues.put(DUE_DATE, task.dueDate)
             insertValues.put(COMPLETED, task.completed)
             id = db.insert(TASK.NAME, null, insertValues)
         }catch (e: Exception){
             throw e
         }
-        return id
+        return id.toString()
     }
 
     fun update(task: TaskEntity){
@@ -106,7 +132,7 @@ class TaskRepository  private constructor(context: Context) {
             updateValues.put(USER_ID, task.userId)
             updateValues.put(PRIORITY_ID, task.priorityId)
             updateValues.put(DESCRIPTION, task.description)
-            updateValues.put(DUE_DATE, task.dueDate)
+            //updateValues.put(DUE_DATE, task.dueDate)
             updateValues.put(COMPLETED, task.completed)
 
             val whereClause = "$ID = ?"

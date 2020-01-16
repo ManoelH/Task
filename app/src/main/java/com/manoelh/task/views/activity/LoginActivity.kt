@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.manoelh.task.R
 import com.manoelh.task.business.UserBusiness
 import com.manoelh.task.constants.SharedPreferencesContants
+import com.manoelh.task.entity.UserEntity
 import com.manoelh.task.util.SecurityPreferences
 import kotlinx.android.synthetic.main.activity_login.*
 
@@ -58,11 +59,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private fun login(){
         val email = editTextLoginEmail.text.toString()
         val password = editTextLoginPassword.text.toString()
-       // if (mUserBusiness.login(email, password))
             userAuthentication(email, password)
-
-        //else
-         //   Toast.makeText(this, this.getString(R.string.messageWrongEmailOrPassword), Toast.LENGTH_LONG).show()
     }
 
     private fun userAuthentication(email: String, password: String){
@@ -72,15 +69,21 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(ContentValues.TAG, "signInWithEmail:success")
                     val user = auth.currentUser
+                    saveUserIdAndEmailToSharedPreferences(user)
                     updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(ContentValues.TAG, "signInWithEmail:failure", task.exception)
-                    Toast.makeText(baseContext, "Authentication failed.",
+                    Toast.makeText(baseContext, this.getString(R.string.messageWrongEmailOrPassword),
                         Toast.LENGTH_SHORT).show()
                     updateUI(null)
                 }
             }
+    }
+
+    private fun saveUserIdAndEmailToSharedPreferences(user: FirebaseUser?) {
+        mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_ID, user!!.uid)
+        mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_EMAIL, user.email!!)
     }
 
     private fun openMainActivity() {

@@ -30,7 +30,7 @@
     <string name="validationSecurityPassword">The password should contain at least one letters, number and special character</string>
     <string name="validationPasswordCharacters">Error the password should contain in minimum 8 characters</string>
     <string name="emailExist">This email exist</string>
-    <string name="messageWrongEmailOrPassword">Error email or password are wrong</string>
+    <string name="messageWrongEmailOrPassword">Authentication failed. Error email or password are wrong</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

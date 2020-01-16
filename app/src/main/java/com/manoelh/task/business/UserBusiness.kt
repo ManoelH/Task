@@ -1,6 +1,7 @@
 package com.manoelh.task.business
 
 import android.content.Context
+import android.view.View
 import android.widget.Toast
 import com.manoelh.task.R
 import com.manoelh.task.constants.SharedPreferencesContants
@@ -40,14 +41,5 @@ class UserBusiness (var context: Context) {
         mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_ID, user.id)
         mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_NAME, user.name)
         mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_EMAIL, user.email)
-    }
-    
-    fun login(email: String, password: String): Boolean{
-        val user = mUserRepository.login(email, password)
-        if (user != null){
-            saveSharedPreferencesUser(user)
-            return true
-        }
-        return false
     }
 }

@@ -36,7 +36,7 @@ class PriorityRepository private constructor(context: Context){
                 .addOnSuccessListener { result ->
                     for (document in result) {
                         Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
-                        val priorityEntity = PriorityEntity(document.id, document.get("description") as String)
+                        val priorityEntity = PriorityEntity(document.id, document.get("description").toString())
                         priorities.add(priorityEntity)
                     }
                 }

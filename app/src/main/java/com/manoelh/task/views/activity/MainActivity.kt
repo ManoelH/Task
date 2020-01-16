@@ -1,7 +1,9 @@
 package com.manoelh.task.views.activity
 
+import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.navigation.ui.AppBarConfiguration
@@ -11,6 +13,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
 import com.manoelh.task.business.PriorityBusiness
 import com.manoelh.task.constants.SharedPreferencesContants
@@ -19,6 +22,7 @@ import com.manoelh.task.repository.PriorityCache
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.views.fragment.TaskListFragment
 import kotlinx.android.synthetic.main.app_bar_main.*
+import java.lang.Exception
 import java.util.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
@@ -26,6 +30,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mSecurityPreferences: SecurityPreferences
     private  lateinit var mPriorityBusiness: PriorityBusiness
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,20 +51,49 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             ), drawerLayout
         )
         intanceMyObjectsWithContext()
-        loadPriorities()
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
-        loadFragment(TaskListFragment.newInstance(TaskConstants.COMPLETED.NOT))
+        getUserNameFromFirebase()
+    }
+
+    override fun onResume() {
+        super.onResume()
         setWelcomeValuesFromUser()
+        loadPriorities()
+        loadFragment(TaskListFragment.newInstance(TaskConstants.COMPLETED.NOT))
+        Thread.sleep(3000)
+    }
+
+    private fun getUserNameFromFirebase(){
+        var userName: String
+        try {
+            db.collection("users")
+                .whereEqualTo("authentication_id", mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID))
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
+                        userName = document.get("name").toString()
+                        textViewWelcome.text = "Hello $userName!"
+                        mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_NAME, userName)
+                        setWelcomeValuesFromUser()
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(ContentValues.TAG, "Error getting documents.", exception)
+                }
+
+        }catch (e: Exception){
+        }
     }
 
     private fun setWelcomeValuesFromUser() {
-        textViewWelcome.text = "Hello ${mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_NAME)}!"
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         val header = navigationView.getHeaderView(0)
         val userName = header.findViewById<TextView>(R.id.textViewUserName)
         val userEmail = header.findViewById<TextView>(R.id.textViewUserEmail)
         userName.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_NAME)
+        textViewWelcome.text = "Hello ${userName.text}"
         userEmail.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_EMAIL)
         setCurrentDate()
     }

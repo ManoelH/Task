@@ -71,7 +71,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 TaskConstants.COMPLETED.YES -> checkBoxCompleted.isChecked = true
                 TaskConstants.COMPLETED.NOT -> checkBoxCompleted.isChecked = false
             }
-            editTextDate.setText(mTask.dueDate)
+            editTextDate.setText(mTask.dueDate.toString())
 
             spinnerPriority.setSelection(returnIndexFromPrioritySpinner(mTask.priorityId))
         }
@@ -134,13 +134,16 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val completed = returnCheckboxValue()
         val dueDate = editTextDate.text.toString()
         val userId = getUserId()
+
+        val date = Calendar.getInstance()
         mTask = TaskEntity(
             mTask.id,
             userId,
             priority.id,
             description,
             completed,
-            dueDate
+            date.time
+            //dueDate
         )
         mTaskBusiness.updateTask(mTask)
     }
@@ -151,11 +154,13 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val completed = returnCheckboxValue()
         val dueDate = editTextDate.text.toString()
         val userId = getUserId()
+
+        val date = Calendar.getInstance()
         mTask = TaskEntity(
             description = description,
             priorityId = priorityId,
             completed = completed,
-            dueDate = dueDate,
+            dueDate = date.time,
             userId = userId
         )
         mTask.id = mTaskBusiness.insertTask(mTask)
@@ -168,15 +173,9 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         editTextDate.setText(date)
     }
 
-    private fun returnCheckboxValue(): Int {
-        var isChecked: Int
-        if (checkBoxCompleted.isChecked)
-            isChecked = TaskConstants.COMPLETED.YES
-        else
-            isChecked = TaskConstants.COMPLETED.NOT
-        return isChecked
-    }
+    private fun returnCheckboxValue() = checkBoxCompleted.isChecked
 
-    private fun getUserId() = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!.toLong()
+
+    private fun getUserId() = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!
 
 }
