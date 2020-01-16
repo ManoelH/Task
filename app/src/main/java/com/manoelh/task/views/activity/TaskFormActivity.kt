@@ -8,13 +8,13 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import com.manoelh.task.R
-import com.manoelh.task.business.PriorityBusiness
 import com.manoelh.task.business.TaskBusiness
 import com.manoelh.task.constants.PriorityConstants
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.entity.TaskEntity
+import com.manoelh.task.repository.PriorityCache
 import com.manoelh.task.util.SecurityPreferences
 import kotlinx.android.synthetic.main.activity_task_form.*
 import java.text.SimpleDateFormat
@@ -24,7 +24,6 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
     private lateinit var mTaskBusiness: TaskBusiness
-    private lateinit var mPriorityBusiness: PriorityBusiness
     private lateinit var mTask: TaskEntity
     private val mCalendar = Calendar.getInstance()
     private lateinit var mPrioritySelected: PriorityEntity
@@ -51,11 +50,10 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private fun intanceMyObjectsWithContext(){
         mTaskBusiness = TaskBusiness(this)
         mSecurityPreferences = SecurityPreferences(this)
-        mPriorityBusiness = PriorityBusiness(this)
     }
 
     private fun loadSpinner(){
-        mPriorities = mPriorityBusiness.loadPriorities()
+        mPriorities = PriorityCache.getCachePriorities()
         val adapter = ArrayAdapter<PriorityEntity>(this, android.R.layout.simple_spinner_dropdown_item, mPriorities)
         spinnerPriority.adapter = adapter
     }

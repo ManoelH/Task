@@ -13,6 +13,20 @@ class PriorityCache private constructor(){
             }
         }
 
-        fun getCache(id: String) = prioritiesHashMap[id].toString()
+        fun getCachePriorityDescription(id: String) = prioritiesHashMap[id].toString()
+
+        fun getCachePriorities(): List<PriorityEntity>{
+            val priorities: MutableList<PriorityEntity> = arrayListOf()
+
+            if (prioritiesHashMap.isNotEmpty()){
+                val ids = prioritiesHashMap.keys.toList()
+
+                for (i in 0 until prioritiesHashMap.size) {
+                    val priority = PriorityEntity(ids[i], prioritiesHashMap[ids[i]]!!)
+                    priorities.add(priority)
+                }
+            }
+            return priorities
+        }
     }
 }

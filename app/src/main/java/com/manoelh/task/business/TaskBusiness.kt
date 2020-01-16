@@ -2,12 +2,8 @@ package com.manoelh.task.business
 
 import android.content.Context
 import com.manoelh.task.R
-import com.manoelh.task.constants.SharedPreferencesContants
-import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.entity.TaskEntity
-import com.manoelh.task.repository.PriorityRepository
 import com.manoelh.task.repository.TaskRepository
-import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.util.ValidationException
 
 class TaskBusiness (var context: Context){

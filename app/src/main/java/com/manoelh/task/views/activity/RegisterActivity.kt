@@ -12,8 +12,10 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
 import com.manoelh.task.business.UserBusiness
+import com.manoelh.task.constants.DatabaseConstants
 import com.manoelh.task.entity.UserEntity
 import com.manoelh.task.util.ValidationException
 import kotlinx.android.synthetic.main.activity_register.*
@@ -24,6 +26,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
     private lateinit var userBusiness: UserBusiness
     private var thePasswordsAreDifferent = true
     private lateinit var auth: FirebaseAuth
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +67,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
                 val email = editTextEmail.text.toString()
                 val password = editTextPassword.text.toString()
                 userEntity = UserEntity(name = name, email = email, password = password)
-                insertIntoFirebaseAuthenticationSystem(userEntity.email, userEntity.password)
+                insertIntoFirebaseAuthenticationSystem()
             }
         }catch (ve: ValidationException){
             Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
@@ -79,29 +82,58 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
         finish()
     }
 
-    private fun insertIntoFirebaseAuthenticationSystem(email: String, password: String){
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { authResult ->
-                if (authResult.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(ContentValues.TAG, "createUserWithEmail:success")
-                    val user = auth.currentUser
-                    val userId = user!!.uid
-                    userEntity.id = userId
-                    userBusiness.registerUser(userEntity, authResult.isSuccessful)
-                    userBusiness.saveSharedPreferencesUser(userEntity)
-                    updateUI(user)
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(ContentValues.TAG, "createUserWithEmail:failure", authResult.exception)
-                    Toast.makeText(
-                        baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    updateUI(null)
-                }
+    private fun insertIntoFirebaseAuthenticationSystem(){
+        try {
+            userBusiness.validateRegisterUser(userEntity.name, userEntity.email, userEntity.password)
 
-            }
+            auth.createUserWithEmailAndPassword(userEntity.email, userEntity.password)
+                .addOnCompleteListener(this) { authResult ->
+                    if (authResult.isSuccessful) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(ContentValues.TAG, "createUserWithEmail:success")
+                        val user = auth.currentUser
+                        val userId = user!!.uid
+                        userEntity.id = userId
+                        userBusiness.saveSharedPreferencesUser(userEntity)
+                        insertUser(authResult.isSuccessful)
+                        updateUI(user)
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(
+                            ContentValues.TAG,
+                            "createUserWithEmail:failure",
+                            authResult.exception
+                        )
+                        Toast.makeText(
+                            baseContext, "Authentication failed.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        updateUI(null)
+                    }
+
+                }
+        }catch (ve: ValidationException){
+            Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun insertUser(isAuthenticated: Boolean){
+        if (isAuthenticated){
+            val userDatabase =
+                hashMapOf(
+                    DatabaseConstants.TABLES.USER.FIREBASE_COLUMNS.NAME to userEntity.name,
+                    DatabaseConstants.TABLES.USER.FIREBASE_COLUMNS.AUTHENTICATION_ID to userEntity.id)
+            db.collection("users")
+                .add(userDatabase)
+                .addOnSuccessListener { documentReference ->
+                    Log.d(ContentValues.TAG,
+                        "DocumentSnapshot added with ID: ${documentReference.id}")
+                    Toast.makeText(this, this.getString(R.string.userSaved), Toast.LENGTH_LONG).show()
+                }
+                .addOnFailureListener { e ->
+                    Log.w(ContentValues.TAG, "Error adding document", e)
+                }
+        }
     }
 
     override fun afterTextChanged(s: Editable?) {

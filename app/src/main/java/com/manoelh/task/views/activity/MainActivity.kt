@@ -15,9 +15,9 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
-import com.manoelh.task.business.PriorityBusiness
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
+import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.repository.PriorityCache
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.views.fragment.TaskListFragment
@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mSecurityPreferences: SecurityPreferences
-    private  lateinit var mPriorityBusiness: PriorityBusiness
     private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +58,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onResume() {
         super.onResume()
         setWelcomeValuesFromUser()
-        loadPriorities()
+        listPriorities()
         loadFragment(TaskListFragment.newInstance(TaskConstants.COMPLETED.NOT))
         Thread.sleep(3000)
     }
@@ -107,17 +106,34 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
         val month = calendar.get(Calendar.MONTH)
 
-        var date = "${days[dayOfWeek - 1]}, ${months[month]} $dayOfMonth"
+        val date = "${days[dayOfWeek - 1]}, ${months[month]} $dayOfMonth"
         textViewCurrentDate.text = date
+    }
+
+    fun listPriorities() {
+        val priorities = mutableListOf<PriorityEntity>()
+
+        try {
+            db.collection("priorities")
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
+                        val priorityEntity = PriorityEntity(document.id, document.get("description").toString())
+                        priorities.add(priorityEntity)
+                    }
+                    PriorityCache.setCache(priorities)
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(ContentValues.TAG, "Error getting documents.", exception)
+                }
+        }catch (e: Exception){
+            throw e
+        }
     }
 
     private fun intanceMyObjectsWithContext(){
         mSecurityPreferences = SecurityPreferences(this)
-        mPriorityBusiness = PriorityBusiness(this)
-    }
-
-    private fun loadPriorities(){
-        PriorityCache.setCache(mPriorityBusiness.loadPriorities())
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

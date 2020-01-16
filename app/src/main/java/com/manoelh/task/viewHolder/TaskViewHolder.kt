@@ -22,7 +22,7 @@ class TaskViewHolder(itemView: View, val context: Context,  val onTaskListFragme
 
     fun bindTask(task: TaskEntity){
         taskDescription.text = task.description
-        priority.text = PriorityCache.getCache(task.priorityId)
+        priority.text = PriorityCache.getCachePriorityDescription(task.priorityId)
         dueDate.text = task.dueDate.toString()
 
         if (task.completed == TaskConstants.COMPLETED.YES)
