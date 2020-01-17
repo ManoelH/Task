@@ -15,6 +15,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
+import com.manoelh.task.constants.DatabaseConstants
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.PriorityEntity
@@ -66,13 +67,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun getUserNameFromFirebase(){
         var userName: String
         try {
-            db.collection("users")
-                .whereEqualTo("authentication_id", mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID))
+            db.collection(DatabaseConstants.COLLECTIONS.USERS.COLLECTION_NAME)
+                .whereEqualTo(DatabaseConstants.COLLECTIONS.USERS.ATTRIBUTES.AUTHENTICATION_ID,
+                    mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID))
                 .get()
                 .addOnSuccessListener { result ->
                     for (document in result) {
                         Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
-                        userName = document.get("name").toString()
+                        userName = document.get(DatabaseConstants.COLLECTIONS.USERS.ATTRIBUTES.NAME).toString()
                         textViewWelcome.text = "Hello $userName!"
                         mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_NAME, userName)
                         setWelcomeValuesFromUser()
@@ -114,12 +116,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val priorities = mutableListOf<PriorityEntity>()
 
         try {
-            db.collection("priorities")
+            db.collection(DatabaseConstants.COLLECTIONS.PRIORITIES.COLLECTION_NAME)
                 .get()
                 .addOnSuccessListener { result ->
                     for (document in result) {
                         Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
-                        val priorityEntity = PriorityEntity(document.id, document.get("description").toString())
+                        val priorityEntity = PriorityEntity(document.id,
+                            document.get(DatabaseConstants.COLLECTIONS.PRIORITIES.ATTRIBUTES.DESCRIPTION).toString())
                         priorities.add(priorityEntity)
                     }
                     PriorityCache.setCache(priorities)

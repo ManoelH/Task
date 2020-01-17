@@ -28,6 +28,8 @@
     <string name="invalidEmail">email is invalid!</string>
     <string name="userSaved">User registered with success!</string>
     <string name="taskSaved">Task registered with success!</string>
+    <string name="taskUpdated">Task updated with success!</string>
+    <string name="taskDeleted">Task deleted with success!</string>
     <string name="validationSecurityPassword">The password should contain at least one letters, number and special character</string>
     <string name="validationPasswordCharacters">Error the password should contain in minimum 8 characters</string>
     <string name="messageWrongEmailOrPassword">Authentication failed. Error email or password are wrong</string>

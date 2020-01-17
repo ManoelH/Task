@@ -24,7 +24,6 @@ import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.util.ValidationException
 import kotlinx.android.synthetic.main.activity_task_form.*
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.*
 
 
@@ -72,17 +71,17 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val bundle = intent.extras?.getString(TaskConstants.KEY.TASK_ID)
         if (bundle!=null){
             mTaskId = bundle
-            db.collection("tasks").document(mTaskId).get()
+            db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(mTaskId).get()
                 .addOnSuccessListener { document ->
                     Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
 
                     mTask = TaskEntity(
                         document.id,
                         getUserId(),
-                        document.get("priority_id").toString(),
-                        document.get("description").toString(),
-                        document.getBoolean("completed")!!,
-                        document.getDate("due_date")!!)
+                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID).toString(),
+                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DESCRIPTION).toString(),
+                        document.getBoolean(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED)!!,
+                        document.getDate(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE)!!)
                     setTaskValuesToActivityWhereTheUpdateWillHappen()
                 }
                 .addOnFailureListener { exception ->
@@ -171,16 +170,16 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         try {
             mTaskBusiness.validateTask(mTask)
 
-            db.collection("tasks").document(mTask.id)
+            db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(mTask.id)
                 .update(mapOf(
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.COMPLETED to mTask.completed,
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.DESCRIPTION to mTask.description,
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.DUE_DATE to mTask.dueDate,
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.PRIORITY_ID to mTask.priorityId
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED to mTask.completed,
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DESCRIPTION to mTask.description,
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE to mTask.dueDate,
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID to mTask.priorityId
                 ))
                 .addOnSuccessListener {
                     Log.d(ContentValues.TAG, "DocumentSnapshot updated with ID: ${mTask.id}")
-                    Toast.makeText(this, this.getString(R.string.taskSaved), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, this.getString(R.string.taskUpdated), Toast.LENGTH_LONG).show()
                     finish()
                 }
                 .addOnFailureListener { e ->
@@ -213,12 +212,12 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             mTaskBusiness.validateTask(mTask)
             val taskDatabase =
                 hashMapOf(
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.AUTHENTICATION_ID to mTask.userId,
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.COMPLETED to mTask.completed,
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.DESCRIPTION to mTask.description,
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.DUE_DATE to mTask.dueDate,
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.PRIORITY_ID to mTask.priorityId)
-            db.collection("tasks")
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.AUTHENTICATION_ID to mTask.userId,
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED to mTask.completed,
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DESCRIPTION to mTask.description,
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE to mTask.dueDate,
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID to mTask.priorityId)
+            db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME)
                 .add(taskDatabase)
                 .addOnSuccessListener { documentReference ->
                     Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")

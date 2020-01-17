@@ -35,7 +35,7 @@ class TaskViewHolder(itemView: View, val context: Context,  val onTaskListFragme
         taskDescription.setOnLongClickListener {
             AlertDialog.Builder(context)
                 .setTitle(context.getString(R.string.titleAlertDialogDeleteTask))
-                .setMessage("Do you really sure that you want delete the task ${task.description}?")
+                .setMessage("Do you really sure that you want to delete the task ${task.description}?")
                 .setIcon(R.drawable.ic_delete)
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Confirm") { _, _ ->

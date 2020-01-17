@@ -1,6 +1,6 @@
 package com.manoelh.task.views.fragment
 
-import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -17,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
 import com.manoelh.task.adapter.TaskListAdapter
 import com.manoelh.task.business.TaskBusiness
+import com.manoelh.task.constants.DatabaseConstants
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.TaskEntity
@@ -66,8 +68,7 @@ class TaskListFragment : Fragment(), View.OnClickListener {
             }
 
             override fun onDeleteClick(task: TaskEntity) {
-                mTaskBusiness.deleteTask(task.id.toLong())
-                listTasks(taskFilterCompleted)
+                deleteTask(task.id)
             }
 
             override fun onImageCompletedClick(task: TaskEntity) {
@@ -75,8 +76,7 @@ class TaskListFragment : Fragment(), View.OnClickListener {
                     task.completed = TaskConstants.COMPLETED.NOT
                 else
                     task.completed = TaskConstants.COMPLETED.YES
-                mTaskBusiness.updateTask(task)
-                listTasks(taskFilterCompleted)
+                updateTask(task.completed, task.id)
             }
         }
         return view
@@ -92,6 +92,19 @@ class TaskListFragment : Fragment(), View.OnClickListener {
         mSecurityPreferences = SecurityPreferences(mContext)
     }
 
+    private fun deleteTask(id: String){
+        db.collection("tasks").document(id)
+            .delete()
+            .addOnSuccessListener {
+                Log.d(TAG, "DocumentSnapshot successfully deleted!")
+                Toast.makeText(mContext, mContext.getText(R.string.taskDeleted), Toast.LENGTH_LONG)
+                listTasks(taskFilterCompleted)
+            }
+            .addOnFailureListener {
+                    e -> Log.w(TAG, "Error deleting document", e)
+            }
+    }
+
     private fun listTasks(taskFilterCompleted: Boolean) {
         val tasksList = mutableListOf<TaskEntity>()
         val userId = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!
@@ -100,7 +113,7 @@ class TaskListFragment : Fragment(), View.OnClickListener {
             .whereEqualTo("completed", taskFilterCompleted).get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
+                    Log.d(TAG, "${document.id} => ${document.data}")
                     val taskEntity = TaskEntity(
                         document.id,
                         userId,
@@ -114,8 +127,27 @@ class TaskListFragment : Fragment(), View.OnClickListener {
                 loadRecyclerView(tasksList)
             }
             .addOnFailureListener { exception ->
-                Log.w(ContentValues.TAG, "Error getting documents.", exception)
+                Log.w(TAG, "Error getting documents.", exception)
             }
+    }
+
+    private fun updateTask(taskCompleted: Boolean, id: String) {
+        db.collection("tasks").document(id)
+            .update(
+                mapOf(
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED to taskCompleted
+                )
+            )
+            .addOnSuccessListener {
+                Log.d(TAG, "DocumentSnapshot updated with ID: $id")
+                Toast.makeText(mContext, mContext.getString(R.string.taskUpdated), Toast.LENGTH_LONG)
+                    .show()
+                listTasks(taskFilterCompleted)
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error updating document", e)
+            }
+
     }
 
     private fun loadRecyclerView(tasksList: List<TaskEntity>) {

@@ -1,5 +1,12 @@
 package com.manoelh.task.repository
 
+/*OBS.:
+    * @author : Manoel Henrique
+    * THIS CLASS IS NOT USED, NO MORE, NOW THIS CLASS IT'S HERE TO SHOW MY KNOWLEDGE WITH SQLITE.
+    * NOW THIS PROJECT IS A FIREBASE PROJECT WITH FIRESTORE DATABASE*/
+
+
+/*
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
@@ -7,7 +14,7 @@ import com.manoelh.task.constants.DatabaseConstants
 
 class DatabaseHelper (context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION){
 
-    //THIS CLASS WILL NOT BE USED
+
     companion object {
         private val DATABASE_NAME = "task.db"
         private val DATABASE_VERSION = 2
@@ -50,4 +57,4 @@ class DatabaseHelper (context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         db.execSQL(dropTableTask)
         onCreate(db)
     }
-}
+}*/

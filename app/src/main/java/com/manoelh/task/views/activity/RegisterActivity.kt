@@ -114,9 +114,9 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
         if (isAuthenticated){
             val userDatabase =
                 hashMapOf(
-                    DatabaseConstants.FIREBASE_TABLES.USERS.COLUMNS.NAME to userEntity.name,
-                    DatabaseConstants.FIREBASE_TABLES.USERS.COLUMNS.AUTHENTICATION_ID to userEntity.id)
-            db.collection("users")
+                    DatabaseConstants.COLLECTIONS.USERS.ATTRIBUTES.NAME to userEntity.name,
+                    DatabaseConstants.COLLECTIONS.USERS.ATTRIBUTES.AUTHENTICATION_ID to userEntity.id)
+            db.collection(DatabaseConstants.COLLECTIONS.USERS.COLLECTION_NAME)
                 .add(userDatabase)
                 .addOnSuccessListener { documentReference ->
                     Log.d(ContentValues.TAG,
