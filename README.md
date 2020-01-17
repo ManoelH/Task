@@ -1,6 +1,8 @@
 # Task
 
-This project is used to show my work and my knowledge with Kotlin language with Android,
+*This app is used to book tasks, this project use Firebase's authentication to login and how database the Firebase Cloud Firestore.
+
+*This project is used to show my work and my knowledge with Kotlin language with Android,
 if you want contact me call me for linkedin, email or my phone number, for security motives this project
 doesn't have the file google-services.json, but I have the apk project and all files.
 
