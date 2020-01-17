@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val userName = header.findViewById<TextView>(R.id.textViewUserName)
         val userEmail = header.findViewById<TextView>(R.id.textViewUserEmail)
         userName.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_NAME)
-        textViewWelcome.text = "Hello ${userName.text}"
+        textViewWelcome.text = "Hello ${userName.text}!"
         userEmail.text = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_EMAIL)
         setCurrentDate()
     }
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         textViewCurrentDate.text = date
     }
 
-    fun listPriorities() {
+    private fun listPriorities() {
         val priorities = mutableListOf<PriorityEntity>()
 
         try {

@@ -2,7 +2,6 @@ package com.manoelh.task.views.activity
 
 import android.app.DatePickerDialog
 import android.content.ContentValues
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,6 +9,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
 import com.manoelh.task.business.TaskBusiness
@@ -24,7 +24,9 @@ import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.util.ValidationException
 import kotlinx.android.synthetic.main.activity_task_form.*
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.*
+
 
 class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
     View.OnClickListener, DatePickerDialog.OnDateSetListener {
@@ -35,7 +37,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private lateinit var mPrioritySelected: PriorityEntity
     private lateinit var mSecurityPreferences: SecurityPreferences
     private lateinit var mPriorities: List<PriorityEntity>
-    private var mTaskId = 0L
+    private var mTaskId = ""
     private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,19 +69,36 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
 
     private fun loadTaskDataToUpdateFromActivity(){
-        val bundle = intent.extras?.getLong(TaskConstants.KEY.TASK_ID)
+        val bundle = intent.extras?.getString(TaskConstants.KEY.TASK_ID)
         if (bundle!=null){
             mTaskId = bundle
-            mTask = mTaskBusiness.loadTaskById(mTaskId)!!
-            editTextDescription.setText(mTask.description)
-            when(mTask.completed) {
-                TaskConstants.COMPLETED.YES -> checkBoxCompleted.isChecked = true
-                TaskConstants.COMPLETED.NOT -> checkBoxCompleted.isChecked = false
-            }
-            editTextDate.setText(mTask.dueDate.toString())
+            db.collection("tasks").document(mTaskId).get()
+                .addOnSuccessListener { document ->
+                    Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
 
-            spinnerPriority.setSelection(returnIndexFromPrioritySpinner(mTask.priorityId))
+                    mTask = TaskEntity(
+                        document.id,
+                        getUserId(),
+                        document.get("priority_id").toString(),
+                        document.get("description").toString(),
+                        document.getBoolean("completed")!!,
+                        document.getDate("due_date")!!)
+                    setTaskValuesToActivityWhereTheUpdateWillHappen()
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(ContentValues.TAG, "Error getting documents.", exception)
+                }
         }
+    }
+
+    private fun setTaskValuesToActivityWhereTheUpdateWillHappen() {
+        editTextDescription.setText(mTask.description)
+        when (mTask.completed) {
+            TaskConstants.COMPLETED.YES -> checkBoxCompleted.isChecked = true
+            TaskConstants.COMPLETED.NOT -> checkBoxCompleted.isChecked = false
+        }
+        editTextDate.setText(mTask.dueDate.toString())
+        spinnerPriority.setSelection(returnIndexFromPrioritySpinner(mTask.priorityId))
     }
 
     private fun returnIndexFromPrioritySpinner(priorityId: String): Int{
@@ -95,7 +114,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     private fun loadTextButtonSaveTask(){
-        if(mTaskId > 0)
+        if(mTaskId.isNotBlank())
             buttonSaveTask.text = getString(R.string.buttonEdit)
         else
             buttonSaveTask.text = getString(R.string.buttonRegister)
@@ -124,34 +143,55 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     private fun verifyActionRegisterTaskButton(){
-        if (mTaskId > 0)
-            updateTask()
+        if (mTaskId.isNotBlank())
+            setTaskAttributesToUpdate()
         else
-            setTaskAtributes()
+            setTaskAttributesToInsert()
     }
 
-    private fun updateTask(){
+    private fun setTaskAttributesToUpdate(){
         val priority = spinnerPriority.selectedItem as PriorityEntity
         val description = editTextDescription.text.toString()
         val completed = returnCheckboxValue()
-        val dueDate = editTextDate.text.toString()
+        val dueDate = SimpleDateFormat("MM/dd/yyyy").parse(editTextDate.text.toString())
         val userId = getUserId()
 
-        val date = Calendar.getInstance()
         mTask = TaskEntity(
             mTask.id,
             userId,
             priority.id,
             description,
             completed,
-            date.time
-            //dueDate
+            dueDate
         )
-        mTaskBusiness.updateTask(mTask)
-        finish()
+        updateTask()
     }
 
-    private fun setTaskAtributes() {
+    private fun updateTask(){
+        try {
+            mTaskBusiness.validateTask(mTask)
+
+            db.collection("tasks").document(mTask.id)
+                .update(mapOf(
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.COMPLETED to mTask.completed,
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.DESCRIPTION to mTask.description,
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.DUE_DATE to mTask.dueDate,
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.PRIORITY_ID to mTask.priorityId
+                ))
+                .addOnSuccessListener {
+                    Log.d(ContentValues.TAG, "DocumentSnapshot updated with ID: ${mTask.id}")
+                    Toast.makeText(this, this.getString(R.string.taskSaved), Toast.LENGTH_LONG).show()
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    Log.w(ContentValues.TAG, "Error updating document", e)
+                }
+        }catch (ve: ValidationException){
+            Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun setTaskAttributesToInsert() {
         val priorityId = mPrioritySelected.id
         val description = editTextDescription.text.toString()
         val completed = returnCheckboxValue()
@@ -165,27 +205,24 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             dueDate = dueDate,
             userId = userId
         )
-        insertTask(mTask)
+        insertTask()
     }
 
-    private fun insertTask(taskEntity: TaskEntity){
+    private fun insertTask(){
         try {
-            mTaskBusiness.validateTask(taskEntity)
+            mTaskBusiness.validateTask(mTask)
             val taskDatabase =
                 hashMapOf(
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.AUTHENTICATION_ID to taskEntity.userId,
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.COMPLETED to taskEntity.completed,
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.DESCRIPTION to taskEntity.description,
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.DUE_DATE to taskEntity.dueDate,
-                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.PRIORITY_ID to taskEntity.priorityId)
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.AUTHENTICATION_ID to mTask.userId,
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.COMPLETED to mTask.completed,
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.DESCRIPTION to mTask.description,
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.DUE_DATE to mTask.dueDate,
+                    DatabaseConstants.FIREBASE_TABLES.TASKS.COLUMNS.PRIORITY_ID to mTask.priorityId)
             db.collection("tasks")
                 .add(taskDatabase)
                 .addOnSuccessListener { documentReference ->
-                    Log.d(
-                        ContentValues.TAG,
-                        "DocumentSnapshot added with ID: ${documentReference.id}")
-                    Toast.makeText(this, this.getString(R.string.taskSaved), Toast.LENGTH_LONG)
-                        .show()
+                    Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                    Toast.makeText(this, this.getString(R.string.taskSaved), Toast.LENGTH_LONG).show()
                     finish()
                 }
                 .addOnFailureListener { e ->

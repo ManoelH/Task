@@ -95,30 +95,27 @@ class TaskListFragment : Fragment(), View.OnClickListener {
     private fun listTasks(taskFilterCompleted: Boolean) {
         val tasksList = mutableListOf<TaskEntity>()
         val userId = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!
-        try {
-            db.collection("tasks").whereEqualTo("authentication_id", userId)
-                .whereEqualTo("completed", taskFilterCompleted).get()
-                .addOnSuccessListener { result ->
-                    for (document in result) {
-                        Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
-                        val taskEntity = TaskEntity(
-                            document.id,
-                            userId,
-                            document.get("priority_id").toString(),
-                            document.get("description").toString(),
-                            document.getBoolean("completed")!!,
-                            document.getDate("due_date")!!
-                        )
-                        tasksList.add(taskEntity)
-                    }
-                    loadRecyclerView(tasksList)
+
+        db.collection("tasks").whereEqualTo("authentication_id", userId)
+            .whereEqualTo("completed", taskFilterCompleted).get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
+                    val taskEntity = TaskEntity(
+                        document.id,
+                        userId,
+                        document.get("priority_id").toString(),
+                        document.get("description").toString(),
+                        document.getBoolean("completed")!!,
+                        document.getDate("due_date")!!
+                    )
+                    tasksList.add(taskEntity)
                 }
-                .addOnFailureListener { exception ->
-                    Log.w(ContentValues.TAG, "Error getting documents.", exception)
-                }
-        }catch (e: Exception){
-            throw e
-        }
+                loadRecyclerView(tasksList)
+            }
+            .addOnFailureListener { exception ->
+                Log.w(ContentValues.TAG, "Error getting documents.", exception)
+            }
     }
 
     private fun loadRecyclerView(tasksList: List<TaskEntity>) {

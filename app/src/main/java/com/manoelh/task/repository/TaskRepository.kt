@@ -32,52 +32,6 @@ class TaskRepository  private constructor(context: Context) {
         }
     }
 
-    fun listTasks(userId: String, taskFilterCompleted: Boolean) :MutableList<TaskEntity>{
-        val tasksList = mutableListOf<TaskEntity>()
-        try {
-
-            db.collection("tasks").whereEqualTo("authentication_id", userId)
-                .whereEqualTo("completed", taskFilterCompleted).get()
-                .addOnSuccessListener { result ->
-                    for (document in result) {
-                        Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
-                        val taskEntity = TaskEntity(
-                            document.id,
-                            userId,
-                            document.get("priority_id").toString(),
-                            document.get("description").toString(),
-                            document.getBoolean("completed")!!,
-                            document.getDate("due_date")!!
-                        )
-                        tasksList.add(taskEntity)
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.w(ContentValues.TAG, "Error getting documents.", exception)
-                }
-
-            /*val cursor: Cursor
-            val db = mDatabaseHelper.readableDatabase
-            val columns = arrayOf(ID, USER_ID, PRIORITY_ID, DESCRIPTION, COMPLETED, DUE_DATE)
-            val selection = "$USER_ID = ? AND $COMPLETED = ?"
-            val selectionArgs = arrayOf(userId.toString(), taskFilterCompleted.toString())
-            cursor = db.query(TASK.NAME, columns, selection, selectionArgs, null, null, DUE_DATE)
-            if (cursor.count > 0) {
-                cursor.moveToFirst()
-                var i = 0
-                while (i < cursor.count) {
-                    tasksList.add(getTaskOfCursor(cursor))
-                    cursor.moveToNext()
-                    i++
-                }
-            }
-            cursor.close()*/
-        }catch (e: Exception){
-            return tasksList
-        }
-        return tasksList
-    }
-
     fun getTask(id: Long): TaskEntity?{
         var task: TaskEntity? = null
         try {
@@ -97,16 +51,6 @@ class TaskRepository  private constructor(context: Context) {
         }
         return task
     }
-
-/*    private fun getTaskOfCursor(cursor: Cursor): TaskEntity{
-        val taskId = cursor.getString(cursor.getColumnIndex(ID))
-        val userID = cursor.getString(cursor.getColumnIndex(USER_ID))
-        val priorityID = cursor.getString(cursor.getColumnIndex(PRIORITY_ID))
-        val description = cursor.getString(cursor.getColumnIndex(DESCRIPTION))
-        val completed = cursor.getInt(cursor.getColumnIndex(COMPLETED))
-        val dueDate = cursor.getDa(cursor.getColumnIndex(DUE_DATE))
-        return TaskEntity(taskId, userID, priorityID, description, completed, dueDate)
-    }*/
 
     fun update(task: TaskEntity){
         try {

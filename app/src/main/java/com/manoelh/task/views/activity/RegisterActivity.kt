@@ -99,15 +99,8 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
                         updateUI(user)
                     } else {
                         // If sign in fails, display a message to the user.
-                        Log.w(
-                            ContentValues.TAG,
-                            "createUserWithEmail:failure",
-                            authResult.exception
-                        )
-                        Toast.makeText(
-                            baseContext, "Authentication failed.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Log.w(ContentValues.TAG, "createUserWithEmail:failure", authResult.exception)
+                        Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
                         updateUI(null)
                     }
 
