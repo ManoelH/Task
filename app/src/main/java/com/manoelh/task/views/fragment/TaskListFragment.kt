@@ -5,16 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
-
 import com.manoelh.task.R
 import com.manoelh.task.adapter.TaskListAdapter
 import com.manoelh.task.business.TaskBusiness
@@ -25,6 +24,7 @@ import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.interfaces.OnTaskListFragmentInteractionListener
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.views.activity.TaskFormActivity
+
 
 class TaskListFragment : Fragment(), View.OnClickListener {
 
@@ -93,7 +93,7 @@ class TaskListFragment : Fragment(), View.OnClickListener {
     }
 
     private fun deleteTask(id: String){
-        db.collection("tasks").document(id)
+        db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(id)
             .delete()
             .addOnSuccessListener {
                 Log.d(TAG, "DocumentSnapshot successfully deleted!")
@@ -109,19 +109,20 @@ class TaskListFragment : Fragment(), View.OnClickListener {
         val tasksList = mutableListOf<TaskEntity>()
         val userId = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!
 
-        db.collection("tasks").whereEqualTo("authentication_id", userId)
-            .whereEqualTo("completed", taskFilterCompleted).get()
+        db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME)
+            .whereEqualTo(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.AUTHENTICATION_ID, userId)
+            .whereEqualTo(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED, taskFilterCompleted).get()
             .addOnSuccessListener { result ->
                 for (document in result) {
                     Log.d(TAG, "${document.id} => ${document.data}")
+
                     val taskEntity = TaskEntity(
                         document.id,
                         userId,
-                        document.get("priority_id").toString(),
-                        document.get("description").toString(),
-                        document.getBoolean("completed")!!,
-                        document.getDate("due_date")!!
-                    )
+                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID).toString(),
+                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DESCRIPTION).toString(),
+                        document.getBoolean(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED)!!,
+                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE).toString())
                     tasksList.add(taskEntity)
                 }
                 loadRecyclerView(tasksList)
@@ -132,7 +133,7 @@ class TaskListFragment : Fragment(), View.OnClickListener {
     }
 
     private fun updateTask(taskCompleted: Boolean, id: String) {
-        db.collection("tasks").document(id)
+        db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(id)
             .update(
                 mapOf(
                     DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED to taskCompleted

@@ -52,7 +52,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private fun setListeners(){
         spinnerPriority.onItemSelectedListener = this
         buttonSaveTask.setOnClickListener(this)
-        editTextDate.setOnClickListener(this)
+        buttonDate.setOnClickListener(this)
     }
 
     private fun intanceMyObjectsWithContext(){
@@ -81,7 +81,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID).toString(),
                         document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DESCRIPTION).toString(),
                         document.getBoolean(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED)!!,
-                        document.getDate(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE)!!)
+                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE).toString())
                     setTaskValuesToActivityWhereTheUpdateWillHappen()
                 }
                 .addOnFailureListener { exception ->
@@ -96,7 +96,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             TaskConstants.COMPLETED.YES -> checkBoxCompleted.isChecked = true
             TaskConstants.COMPLETED.NOT -> checkBoxCompleted.isChecked = false
         }
-        editTextDate.setText(mTask.dueDate.toString())
+        buttonDate.text = mTask.dueDate
         spinnerPriority.setSelection(returnIndexFromPrioritySpinner(mTask.priorityId))
     }
 
@@ -128,7 +128,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     override fun onClick(view: View) {
-        if (view.id == R.id.editTextDate)
+        if (view.id == R.id.buttonDate)
             openDatePicker()
         else if (view.id == R.id.buttonSaveTask)
             verifyActionRegisterTaskButton()
@@ -152,7 +152,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val priority = spinnerPriority.selectedItem as PriorityEntity
         val description = editTextDescription.text.toString()
         val completed = returnCheckboxValue()
-        val dueDate = SimpleDateFormat("MM/dd/yyyy").parse(editTextDate.text.toString())
+        val dueDate = buttonDate.text.toString()
         val userId = getUserId()
 
         mTask = TaskEntity(
@@ -194,7 +194,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val priorityId = mPrioritySelected.id
         val description = editTextDescription.text.toString()
         val completed = returnCheckboxValue()
-        val dueDate = SimpleDateFormat("MM/dd/yyyy").parse(editTextDate.text.toString())
+        val dueDate = buttonDate.text.toString()
         val userId = getUserId()
 
         mTask = TaskEntity(
@@ -236,7 +236,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val mSimpleFormat = SimpleDateFormat("MM/dd/yyyy")
         mCalendar.set(year, month, dayOfMonth)
         val date = mSimpleFormat.format(mCalendar.time)
-        editTextDate.setText(date)
+        buttonDate.text = date
     }
 
     private fun returnCheckboxValue() = checkBoxCompleted.isChecked
