@@ -85,7 +85,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                     setTaskValuesToActivityWhereTheUpdateWillHappen()
                 }
                 .addOnFailureListener { exception ->
-                    Log.w(ContentValues.TAG, "Error getting documents.", exception)
+                    Log.w(ContentValues.TAG, getString(R.string.error_getting_task_to_update), exception)
                 }
         }
     }
@@ -178,12 +178,12 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                     DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID to mTask.priorityId
                 ))
                 .addOnSuccessListener {
-                    Log.d(ContentValues.TAG, "DocumentSnapshot updated with ID: ${mTask.id}")
+                    Log.d(ContentValues.TAG, getString(R.string.task_updated) +mTask.id)
                     Toast.makeText(this, this.getString(R.string.taskUpdated), Toast.LENGTH_LONG).show()
                     finish()
                 }
                 .addOnFailureListener { e ->
-                    Log.w(ContentValues.TAG, "Error updating document", e)
+                    Log.w(ContentValues.TAG, getString(R.string.error_update_task), e)
                 }
         }catch (ve: ValidationException){
             Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
@@ -220,12 +220,12 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME)
                 .add(taskDatabase)
                 .addOnSuccessListener { documentReference ->
-                    Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                    Log.d(ContentValues.TAG, getString(R.string.task_added) + documentReference.id)
                     Toast.makeText(this, this.getString(R.string.taskSaved), Toast.LENGTH_LONG).show()
                     finish()
                 }
                 .addOnFailureListener { e ->
-                    Log.w(ContentValues.TAG, "Error adding document", e)
+                    Log.w(ContentValues.TAG, getString(R.string.error_adding_task), e)
                 }
         }catch (ve: ValidationException){
             Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
@@ -233,7 +233,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, dayOfMonth: Int) {
-        val mSimpleFormat = SimpleDateFormat("MM/dd/yyyy")
+        val mSimpleFormat = SimpleDateFormat(TaskConstants.DATE.PATTERN)
         mCalendar.set(year, month, dayOfMonth)
         val date = mSimpleFormat.format(mCalendar.time)
         buttonDate.text = date

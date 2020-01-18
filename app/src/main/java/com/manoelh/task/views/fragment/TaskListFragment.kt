@@ -96,12 +96,12 @@ class TaskListFragment : Fragment(), View.OnClickListener {
         db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(id)
             .delete()
             .addOnSuccessListener {
-                Log.d(TAG, "DocumentSnapshot successfully deleted!")
+                Log.d(TAG, getString(R.string.task_deleted))
                 Toast.makeText(mContext, mContext.getText(R.string.taskDeleted), Toast.LENGTH_LONG)
                 listTasks(taskFilterCompleted)
             }
             .addOnFailureListener {
-                    e -> Log.w(TAG, "Error deleting document", e)
+                    e -> Log.w(TAG, getString(R.string.error_deleting_task), e)
             }
     }
 
@@ -128,7 +128,7 @@ class TaskListFragment : Fragment(), View.OnClickListener {
                 loadRecyclerView(tasksList)
             }
             .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents.", exception)
+                Log.w(TAG, getString(R.string.error_getting_all_tasks), exception)
             }
     }
 
@@ -140,13 +140,13 @@ class TaskListFragment : Fragment(), View.OnClickListener {
                 )
             )
             .addOnSuccessListener {
-                Log.d(TAG, "DocumentSnapshot updated with ID: $id")
+                Log.d(TAG, getString(R.string.taskUpdated) + id)
                 Toast.makeText(mContext, mContext.getString(R.string.taskUpdated), Toast.LENGTH_LONG)
                     .show()
                 listTasks(taskFilterCompleted)
             }
             .addOnFailureListener { e ->
-                Log.w(TAG, "Error updating document", e)
+                Log.w(TAG, getString(R.string.error_update_task), e)
             }
 
     }

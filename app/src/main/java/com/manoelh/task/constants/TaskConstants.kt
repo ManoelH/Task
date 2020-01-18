@@ -10,4 +10,8 @@ class TaskConstants {
         val TASK_FILTER = "taskFilter"
         val TASK_ID = "taskId"
     }
+
+    object DATE{
+        val PATTERN = "MM/dd/yyyy"
+    }
 }

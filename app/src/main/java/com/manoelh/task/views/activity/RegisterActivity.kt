@@ -90,7 +90,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
                 .addOnCompleteListener(this) { authResult ->
                     if (authResult.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.d(ContentValues.TAG, "createUserWithEmail:success")
+                        Log.d(ContentValues.TAG, getString(R.string.login_successful))
                         val user = auth.currentUser
                         val userId = user!!.uid
                         userEntity.id = userId
@@ -99,8 +99,8 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
                         updateUI(user)
                     } else {
                         // If sign in fails, display a message to the user.
-                        Log.w(ContentValues.TAG, "createUserWithEmail:failure", authResult.exception)
-                        Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                        Log.w(ContentValues.TAG, getString(R.string.login_unsuccessful), authResult.exception)
+                        Toast.makeText(baseContext, getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show()
                         updateUI(null)
                     }
 
@@ -120,11 +120,11 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
                 .add(userDatabase)
                 .addOnSuccessListener { documentReference ->
                     Log.d(ContentValues.TAG,
-                        "DocumentSnapshot added with ID: ${documentReference.id}")
+                        getString(R.string.user_added) + documentReference.id)
                     Toast.makeText(this, this.getString(R.string.userSaved), Toast.LENGTH_LONG).show()
                 }
                 .addOnFailureListener { e ->
-                    Log.w(ContentValues.TAG, "Error adding document", e)
+                    Log.w(ContentValues.TAG, getString(R.string.adding_error_user), e)
                 }
         }
     }

@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }
                 .addOnFailureListener { exception ->
-                    Log.w(ContentValues.TAG, "Error getting documents.", exception)
+                    Log.w(ContentValues.TAG, getString(R.string.error_getting_user_name), exception)
                 }
 
         }catch (e: Exception){
@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     PriorityCache.setCache(priorities)
                 }
                 .addOnFailureListener { exception ->
-                    Log.w(ContentValues.TAG, "Error getting documents.", exception)
+                    Log.w(ContentValues.TAG, getString(R.string.error_getting_priorities), exception)
                 }
         }catch (e: Exception){
             throw e
