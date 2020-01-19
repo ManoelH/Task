@@ -1,100 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<androidx.core.widget.NestedScrollView
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".views.activity.RegisterActivity">
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <EditText
-        android:id="@+id/editTextEmail"
-        style="@style/mEditTextColorsCustom"
-        android:layout_width="370dp"
-        android:layout_marginTop="32dp"
-        android:drawableStart="@drawable/ic_mail"
-        android:drawablePadding="8dp"
-        android:ems="10"
-        android:hint="@string/prompt_email"
-        android:inputType="textEmailAddress"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.487"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextName" />
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        tools:context=".views.activity.RegisterActivity">
 
-    <EditText
-        android:id="@+id/editTextPassword"
-        style="@style/mEditTextColorsCustom"
-        android:layout_width="372dp"
-        android:layout_marginTop="32dp"
-        android:drawableStart="@drawable/ic_lock"
-        android:drawablePadding="8dp"
-        android:ems="10"
-        android:hint="@string/prompt_password"
-        android:inputType="textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.487"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextEmail" />
+        <EditText
+            android:id="@+id/editTextEmail"
+            style="@style/mEditTextColorsCustom"
+            android:layout_width="370dp"
+            android:layout_marginTop="32dp"
+            android:drawableStart="@drawable/ic_mail"
+            android:drawablePadding="8dp"
+            android:ems="10"
+            android:hint="@string/prompt_email"
+            android:inputType="textEmailAddress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextName" />
 
-    <EditText
-        android:id="@+id/editTextRewritePassword"
-        style="@style/mEditTextColorsCustom"
-        android:layout_width="372dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:drawableStart="@drawable/ic_lock"
-        android:drawablePadding="8dp"
-        android:ems="10"
-        android:hint="@string/prompt_rewrite_password"
-        android:inputType="textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.897"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
+        <EditText
+            android:id="@+id/editTextPassword"
+            style="@style/mEditTextColorsCustom"
+            android:layout_width="372dp"
+            android:layout_marginTop="32dp"
+            android:drawableStart="@drawable/ic_lock"
+            android:drawablePadding="8dp"
+            android:ems="10"
+            android:hint="@string/prompt_password"
+            android:inputType="textPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextEmail" />
 
-    <EditText
-        android:id="@+id/editTextName"
-        style="@style/mEditTextColorsCustom"
-        android:layout_width="370dp"
-        android:layout_marginTop="84dp"
-        android:drawableStart="@drawable/ic_user"
-        android:drawablePadding="8dp"
-        android:ems="10"
-        android:hint="@string/prompt_name"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <EditText
+            android:id="@+id/editTextRewritePassword"
+            style="@style/mEditTextColorsCustom"
+            android:layout_width="372dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="32dp"
+            android:drawableStart="@drawable/ic_lock"
+            android:drawablePadding="8dp"
+            android:ems="10"
+            android:hint="@string/prompt_rewrite_password"
+            android:inputType="textPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.49"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
-    <Button
-        android:id="@+id/buttonRegister"
-        android:layout_width="240dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="224dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/button_shape"
-        android:text="@string/buttonRegister"
-        android:textColor="@color/colorLight"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextPassword"
-        app:layout_constraintVertical_bias="0.714" />
+        <EditText
+            android:id="@+id/editTextName"
+            style="@style/mEditTextColorsCustom"
+            android:layout_width="370dp"
+            android:layout_marginTop="84dp"
+            android:drawableStart="@drawable/ic_user"
+            android:drawablePadding="8dp"
+            android:ems="10"
+            android:hint="@string/prompt_name"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textViewPasswordsAreNotEquals"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="7dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/the_passwords_are_not_equals"
-        android:textColor="@color/colorAccent"
-        android:textSize="10sp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextRewritePassword" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/buttonRegister"
+            android:layout_width="240dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="224dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/button_shape"
+            android:text="@string/buttonRegister"
+            android:textColor="@color/colorLight"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextPassword"
+            app:layout_constraintVertical_bias="0.714" />
+
+        <TextView
+            android:id="@+id/textViewPasswordsAreNotEquals"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="7dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/the_passwords_are_not_equals"
+            android:textColor="@color/colorAccent"
+            android:textSize="10sp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextRewritePassword" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
