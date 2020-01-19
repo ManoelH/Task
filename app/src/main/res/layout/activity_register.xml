@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<androidx.core.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
@@ -15,7 +14,7 @@
         <EditText
             android:id="@+id/editTextEmail"
             style="@style/mEditTextColorsCustom"
-            android:layout_width="370dp"
+            android:layout_width="0dp"
             android:layout_marginTop="32dp"
             android:drawableStart="@drawable/ic_mail"
             android:drawablePadding="8dp"
@@ -30,7 +29,7 @@
         <EditText
             android:id="@+id/editTextPassword"
             style="@style/mEditTextColorsCustom"
-            android:layout_width="372dp"
+            android:layout_width="0dp"
             android:layout_marginTop="32dp"
             android:drawableStart="@drawable/ic_lock"
             android:drawablePadding="8dp"
@@ -45,8 +44,8 @@
         <EditText
             android:id="@+id/editTextRewritePassword"
             style="@style/mEditTextColorsCustom"
-            android:layout_width="372dp"
-            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:drawableStart="@drawable/ic_lock"
             android:drawablePadding="8dp"
@@ -61,7 +60,7 @@
         <EditText
             android:id="@+id/editTextName"
             style="@style/mEditTextColorsCustom"
-            android:layout_width="370dp"
+            android:layout_width="0dp"
             android:layout_marginTop="84dp"
             android:drawableStart="@drawable/ic_user"
             android:drawablePadding="8dp"
@@ -75,7 +74,7 @@
         <Button
             android:id="@+id/buttonRegister"
             android:layout_width="240dp"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginTop="224dp"
             android:layout_marginEnd="32dp"
