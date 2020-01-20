@@ -23,5 +23,4 @@ kotlinOptions {
 
 # Note
 
-This app will get some improvements to landscape mode, in the moment just login page is working fine
-and new functionalities
+This app will get some improvemnts how: notifications, login with google and image to profile 
