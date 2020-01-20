@@ -123,8 +123,8 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         mPrioritySelected.id = PriorityConstants.DEFAULT_PRIORITY.ID
     }
 
-    override fun onItemSelected(adapterView: AdapterView<*>, view: View, position: Int, id: Long) {
-        mPrioritySelected = spinnerPriority.selectedItem as PriorityEntity
+    override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, id: Long) {
+            mPrioritySelected = spinnerPriority.selectedItem as PriorityEntity
     }
 
     override fun onClick(view: View) {
