@@ -23,7 +23,7 @@ class TaskViewHolder(itemView: View, val context: Context,  val onTaskListFragme
     fun bindTask(task: TaskEntity){
         taskDescription.text = task.description
         priority.text = PriorityCache.getCachePriorityDescription(task.priorityId)
-        dueDate.text = task.dueDate.toString()
+        dueDate.text = task.dueDate
 
         if (task.completed == TaskConstants.COMPLETED.YES)
             completed.setImageResource(R.drawable.ic_done)
@@ -34,7 +34,7 @@ class TaskViewHolder(itemView: View, val context: Context,  val onTaskListFragme
 
         taskDescription.setOnLongClickListener {
             AlertDialog.Builder(context)
-                .setTitle(context.getString(R.string.titleAlertDialogDeleteTask))
+                .setTitle(context.getString(R.string.title_alert_dialog_delete_task))
                 .setMessage("Do you really sure that you want to delete the task ${task.description}?")
                 .setIcon(R.drawable.ic_delete)
                 .setNegativeButton("Cancel", null)

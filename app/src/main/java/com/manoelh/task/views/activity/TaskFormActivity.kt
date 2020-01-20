@@ -5,11 +5,10 @@ import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.DatePicker
-import android.widget.Toast
+import android.view.WindowManager
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
 import com.manoelh.task.business.TaskBusiness
@@ -114,9 +113,9 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
     private fun loadTextButtonSaveTask(){
         if(mTaskId.isNotBlank())
-            buttonSaveTask.text = getString(R.string.buttonEdit)
+            buttonSaveTask.text = getString(R.string.button_edit)
         else
-            buttonSaveTask.text = getString(R.string.buttonRegister)
+            buttonSaveTask.text = getString(R.string.button_register)
     }
 
     override fun onNothingSelected(parent: AdapterView<*>) {
@@ -142,10 +141,24 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     private fun verifyActionRegisterTaskButton(){
+        changeVisibilityProgressBar()
         if (mTaskId.isNotBlank())
             setTaskAttributesToUpdate()
         else
             setTaskAttributesToInsert()
+    }
+
+    private fun changeVisibilityProgressBar(){
+        if (progressBar.isVisible) {
+            progressBar.visibility = ProgressBar.INVISIBLE
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        }
+        else{
+            progressBar.visibility = ProgressBar.VISIBLE
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        }
     }
 
     private fun setTaskAttributesToUpdate(){
@@ -178,15 +191,17 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                     DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID to mTask.priorityId
                 ))
                 .addOnSuccessListener {
-                    Log.d(ContentValues.TAG, getString(R.string.task_updated) +mTask.id)
-                    Toast.makeText(this, this.getString(R.string.taskUpdated), Toast.LENGTH_LONG).show()
+                    Log.d(ContentValues.TAG, getString(R.string.task_updated_log) +mTask.id)
+                    Toast.makeText(this, this.getString(R.string.task_updated_message), Toast.LENGTH_LONG).show()
                     finish()
                 }
                 .addOnFailureListener { e ->
                     Log.w(ContentValues.TAG, getString(R.string.error_update_task), e)
+                    changeVisibilityProgressBar()
                 }
         }catch (ve: ValidationException){
             Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
+            changeVisibilityProgressBar()
         }
     }
 
@@ -202,8 +217,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             priorityId = priorityId,
             completed = completed,
             dueDate = dueDate,
-            userId = userId
-        )
+            userId = userId)
         insertTask()
     }
 
@@ -220,15 +234,17 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME)
                 .add(taskDatabase)
                 .addOnSuccessListener { documentReference ->
-                    Log.d(ContentValues.TAG, getString(R.string.task_added) + documentReference.id)
-                    Toast.makeText(this, this.getString(R.string.taskSaved), Toast.LENGTH_LONG).show()
+                    Log.d(ContentValues.TAG, getString(R.string.task_added_log) + documentReference.id)
+                    Toast.makeText(this, this.getString(R.string.task_saved_message), Toast.LENGTH_LONG).show()
                     finish()
                 }
                 .addOnFailureListener { e ->
                     Log.w(ContentValues.TAG, getString(R.string.error_adding_task), e)
+                    changeVisibilityProgressBar()
                 }
         }catch (ve: ValidationException){
             Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
+            changeVisibilityProgressBar()
         }
     }
 

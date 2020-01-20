@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".views.activity.RegisterActivity"
+        <activity android:name=".views.activity.RegisterUserActivity"
             android:screenOrientation="sensor"/>
 
         <activity

@@ -8,6 +8,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.view.isVisible
 import com.google.firebase.auth.FirebaseAuth
@@ -18,9 +20,10 @@ import com.manoelh.task.business.UserBusiness
 import com.manoelh.task.constants.DatabaseConstants
 import com.manoelh.task.entity.UserEntity
 import com.manoelh.task.util.ValidationException
-import kotlinx.android.synthetic.main.activity_register.*
+import kotlinx.android.synthetic.main.activity_register_user.*
+import kotlinx.android.synthetic.main.activity_register_user.progressBar
 
-class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher {
+class RegisterUserActivity : AppCompatActivity(), View.OnClickListener, TextWatcher {
 
     private lateinit var userEntity: UserEntity
     private lateinit var userBusiness: UserBusiness
@@ -30,7 +33,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        setContentView(R.layout.activity_register_user)
         setListeners()
         userBusiness = UserBusiness(this)
         auth = FirebaseAuth.getInstance()
@@ -66,13 +69,14 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
                 val name = editTextName.text.toString()
                 val email = editTextEmail.text.toString()
                 val password = editTextPassword.text.toString()
+                changeVisibilityProgressBar()
                 userEntity = UserEntity(name = name, email = email, password = password)
                 insertIntoFirebaseAuthenticationSystem()
             }
         }catch (ve: ValidationException){
             Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
         }catch (e: Exception){
-            Toast.makeText(this, getString(R.string.genericError), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.generic_error), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -101,12 +105,14 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
                         // If sign in fails, display a message to the user.
                         Log.w(ContentValues.TAG, getString(R.string.login_unsuccessful), authResult.exception)
                         Toast.makeText(baseContext, getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show()
+                        changeVisibilityProgressBar()
                         updateUI(null)
                     }
 
                 }
         }catch (ve: ValidationException){
             Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
+            changeVisibilityProgressBar()
         }
     }
 
@@ -120,12 +126,27 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener, TextWatcher 
                 .add(userDatabase)
                 .addOnSuccessListener { documentReference ->
                     Log.d(ContentValues.TAG,
-                        getString(R.string.user_added) + documentReference.id)
-                    Toast.makeText(this, this.getString(R.string.userSaved), Toast.LENGTH_LONG).show()
+                        getString(R.string.user_added_log) + documentReference.id)
+                    Toast.makeText(this, this.getString(R.string.user_saved_message), Toast.LENGTH_LONG).show()
                 }
                 .addOnFailureListener { e ->
                     Log.w(ContentValues.TAG, getString(R.string.adding_error_user), e)
+                    changeVisibilityProgressBar()
                 }
+        }
+    }
+
+    private fun changeVisibilityProgressBar(){
+        if (progressBar.isVisible) {
+            progressBar.visibility = ProgressBar.INVISIBLE
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        }
+
+        else{
+            progressBar.visibility = ProgressBar.VISIBLE
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         }
     }
 

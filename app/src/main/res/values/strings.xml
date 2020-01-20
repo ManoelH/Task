@@ -24,22 +24,23 @@
 
     <!--ERROR-->
     <string name="login_failed">"Login failed"</string>
-    <string name="userValidationException">Error, enter all values</string>
-    <string name="genericError">One error happened</string>
+    <string name="user_validation_exception">Error, enter all values</string>
+    <string name="generic_error">One error happened</string>
 
     <!--SUCCESSFUL MESSAGES-->
-    <string name="userSaved">User registered with success!</string>
-    <string name="taskSaved">Task registered with success!</string>
-    <string name="taskUpdated">Task updated with success!</string>
-    <string name="taskDeleted">Task deleted with success!</string>
+    <string name="user_saved_message">User registered with success!</string>
+    <string name="task_saved_message">Task registered with success!</string>
+    <string name="task_updated_message">Task updated with success!</string>
+    <string name="task_deleted_message">Task deleted with success!</string>
 
     <!--VALIDATION-->
-    <string name="invalidEmail">email is invalid!</string>
-    <string name="validationSecurityPassword">The password should contain at least 8 characters</string>
-    <string name="validationPasswordCharacters">The password should contain at least 8 characters</string>
-    <string name="messageWrongEmailOrPassword">Authentication failed. Error email or password are wrong</string>
-    <string name="valuesEmpty">Error there are some value(s) empty</string>
+    <string name="invalid_email">email is invalid!</string>
+    <string name="validation_security_password">The password should contain at least 8 characters</string>
+    <string name="validation_password_characters">The password should contain at least 8 characters</string>
+    <string name="message_wrong_email_or_password">Authentication failed. Error email or password are wrong</string>
+    <string name="description_validation">Error description cannot be empty</string>
     <string name="the_passwords_are_not_equals">The passwords are not equals</string>
+    <string name="date_validation">Error date cannot be empty</string>
 
     <!--TASK PROPRIETIES-->
     <string name="description">Description</string>
@@ -48,9 +49,9 @@
     <string name="completed">Completed</string>
 
     <!--ACTIONS-->
-    <string name="titleAlertDialogDeleteTask">Delete task</string>
-    <string name="buttonEdit">Edit</string>
-    <string name="buttonRegister">Register</string>
+    <string name="title_alert_dialog_delete_task">Delete task</string>
+    <string name="button_edit">Edit</string>
+    <string name="button_register">Register</string>
     <string name="do_you_new_here">Do you new here?</string>
     <string name="click_here">Click here!</string>
 
@@ -69,10 +70,10 @@
     <string name="error_deleting_task">Error deleting task</string>
 
     <!-- LOG DATABASE CRUD-->
-    <string name="user_added">User added with ID:</string>
-    <string name="task_added">Task added with ID:</string>
-    <string name="task_updated">Task updated with ID:</string>
-    <string name="task_deleted">Task successfully deleted!</string>
-    <string name="error_getting_all_tasks">Error getting all tasks.</string>
+    <string name="user_added_log">User added with ID:</string>
+    <string name="task_added_log">Task added with ID:</string>
+    <string name="task_updated_log">Task updated with ID:</string>
+    <string name="task_deleted_log">Task successfully deleted!</string>
+    <string name="error_getting_all_tasks_log">Error getting all tasks.</string>
 
 </resources>

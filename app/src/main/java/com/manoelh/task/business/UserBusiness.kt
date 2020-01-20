@@ -14,13 +14,13 @@ class UserBusiness (var context: Context) {
 
     fun validateRegisterUser(name: String, email: String, password: String){
         if (name.isBlank() || email.isBlank() || password.isBlank())
-            throw ValidationException(context.getString(R.string.userValidationException))
+            throw ValidationException(context.getString(R.string.user_validation_exception))
         if (!email.trim().matches(UserConstants.PATTERNS.EMAIL_VALIDATION.toRegex()))
-            throw ValidationException(context.getString(R.string.invalidEmail))
+            throw ValidationException(context.getString(R.string.invalid_email))
         if (password.length < 8)
-            throw ValidationException(context.getString(R.string.validationPasswordCharacters))
+            throw ValidationException(context.getString(R.string.validation_password_characters))
         if (password.trim().matches(UserConstants.PATTERNS.PASSWORD_VALIDATION.toRegex()))
-            throw ValidationException(context.getString(R.string.validationSecurityPassword))
+            throw ValidationException(context.getString(R.string.validation_security_password))
     }
 
     fun saveSharedPreferencesUser(user: UserEntity){

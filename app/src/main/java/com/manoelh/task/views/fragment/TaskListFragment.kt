@@ -96,8 +96,8 @@ class TaskListFragment : Fragment(), View.OnClickListener {
         db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(id)
             .delete()
             .addOnSuccessListener {
-                Log.d(TAG, getString(R.string.task_deleted))
-                Toast.makeText(mContext, mContext.getText(R.string.taskDeleted), Toast.LENGTH_LONG)
+                Log.d(TAG, getString(R.string.task_deleted_log))
+                Toast.makeText(mContext, mContext.getText(R.string.task_deleted_message), Toast.LENGTH_LONG).show()
                 listTasks(taskFilterCompleted)
             }
             .addOnFailureListener {
@@ -128,7 +128,7 @@ class TaskListFragment : Fragment(), View.OnClickListener {
                 loadRecyclerView(tasksList)
             }
             .addOnFailureListener { exception ->
-                Log.w(TAG, getString(R.string.error_getting_all_tasks), exception)
+                Log.w(TAG, getString(R.string.error_getting_all_tasks_log), exception)
             }
     }
 
@@ -140,8 +140,8 @@ class TaskListFragment : Fragment(), View.OnClickListener {
                 )
             )
             .addOnSuccessListener {
-                Log.d(TAG, getString(R.string.taskUpdated) + id)
-                Toast.makeText(mContext, mContext.getString(R.string.taskUpdated), Toast.LENGTH_LONG)
+                Log.d(TAG, getString(R.string.task_updated_message) + id)
+                Toast.makeText(mContext, mContext.getString(R.string.task_updated_message), Toast.LENGTH_LONG)
                     .show()
                 listTasks(taskFilterCompleted)
             }

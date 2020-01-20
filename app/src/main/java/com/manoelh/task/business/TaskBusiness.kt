@@ -9,6 +9,8 @@ class TaskBusiness (var context: Context){
 
     fun validateTask(task: TaskEntity){
         if (task.description.isBlank())
-            throw ValidationException(context.getString(R.string.valuesEmpty))
+            throw ValidationException(context.getString(R.string.description_validation))
+        if (task.dueDate.isBlank() || task.dueDate.equals("date", ignoreCase = true))
+            throw ValidationException(context.getString(R.string.date_validation))
     }
 }
