@@ -10,6 +10,11 @@
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
 
+    <!--NOTIFICATION-->
+    <string name="channel_name">Tasks</string>
+    <string name="channel_description">This channel is responsible
+    to send you notifications about your events booked</string>
+
     <!--BUTTON OR EDIT TEXT-->
     <string name="menu_home">Home</string>
     <string name="menu_done">Done</string>
