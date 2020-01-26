@@ -27,19 +27,19 @@ import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.repository.PriorityCache
+import com.manoelh.task.service.NotificationService
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.views.fragment.TaskListFragment
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.lang.Exception
 import java.util.*
 
-private const val CHANNEL_ID = "taskChannel_id"
-
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mSecurityPreferences: SecurityPreferences
     private val db = FirebaseFirestore.getInstance()
+    private val CHANNEL_ID = "taskChannel_id"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,8 +63,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationView.setNavigationItemSelectedListener(this)
         getUserNameFromFirebase()
         createNotificationChannel()
-        buildingNotification()
 
+    }
+
+    override fun onStop() {
+        super.onStop()
+              startService(  Intent( this, NotificationService::class.java ))
     }
 
     private fun createNotificationChannel() {
@@ -79,29 +83,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-    private fun buildingNotification() {
-        // Create an explicit intent for an Activity in your app
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
-
-
-        val notification = NotificationCompat.Builder(this, NotificationChannel.DEFAULT_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_mail)
-            .setContentTitle("Task")
-            .setContentText("It's the day of your Task!")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(pendingIntent)
-            .setChannelId(CHANNEL_ID)
-            .setAutoCancel(true)
-
-        with(NotificationManagerCompat.from(this)) {
-            // notificationId is a unique int for each notification that you must define
-            notify(1, notification.build())
         }
     }
 
