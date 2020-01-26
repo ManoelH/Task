@@ -16,6 +16,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -89,14 +90,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
 
-        var notification = NotificationCompat.Builder(this, NotificationChannel.DEFAULT_CHANNEL_ID)
+        val notification = NotificationCompat.Builder(this, NotificationChannel.DEFAULT_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_mail)
-            .setContentTitle("Title")
-            .setContentText("Content")
+            .setContentTitle("Task")
+            .setContentText("It's the day of your Task!")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setChannelId(CHANNEL_ID)
             .setAutoCancel(true)
+
+        with(NotificationManagerCompat.from(this)) {
+            // notificationId is a unique int for each notification that you must define
+            notify(1, notification.build())
+        }
     }
 
     override fun onResume() {
