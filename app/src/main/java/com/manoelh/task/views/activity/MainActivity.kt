@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onStop() {
         super.onStop()
-              startService(  Intent( this, NotificationService::class.java ))
+        startService( Intent( this, NotificationService::class.java ))
     }
 
     private fun createNotificationChannel() {
@@ -91,7 +91,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setWelcomeValuesFromUser()
         listPriorities()
         loadFragment(TaskListFragment.newInstance(TaskConstants.COMPLETED.NOT))
-        Thread.sleep(3000)
     }
 
     private fun getUserNameFromFirebase(){
