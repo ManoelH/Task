@@ -118,19 +118,20 @@ class NotificationService : Service(){
 
     private fun verifyIfExistsSomeTasksPendingToThisDate(){
         val calendar = Calendar.getInstance()
-
+        var idNotification = 1
         mTasksPending.forEach {
             val dueDate = it.dueDate
             val dateFormatter = DateTimeFormatter.ofPattern(TaskConstants.DATE.PATTERN)
             val date = LocalDate.parse(dueDate, dateFormatter)
             if (date.dayOfYear == calendar[Calendar.DAY_OF_YEAR] && date.year == calendar[Calendar.YEAR]){
-                buildingNotification(it.description, it.dueDate)
+                buildingNotification(it.description, it.dueDate, idNotification)
                 Thread.sleep(3000)
             }
+            idNotification++
         }
     }
 
-    private fun buildingNotification(taskDescription: String, dueDate: String) {
+    private fun buildingNotification(taskDescription: String, dueDate: String, idNotification: Int) {
         // Create an explicit intent for an Activity in your app
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -149,7 +150,7 @@ class NotificationService : Service(){
 
         with(NotificationManagerCompat.from(this)) {
             // notificationId is a unique int for each notification that you must define
-            notify(1, notification.build())
+            notify(idNotification, notification.build())
         }
     }
 }
