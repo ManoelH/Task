@@ -12,7 +12,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.view.View
 import android.widget.TextView
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.drawerlayout.widget.DrawerLayout
@@ -28,7 +27,6 @@ import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.repository.PriorityCache
-import com.manoelh.task.service.NotificationService
 import com.manoelh.task.service.TaskJobService
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.views.fragment.TaskListFragment
@@ -41,8 +39,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mSecurityPreferences: SecurityPreferences
     private val db = FirebaseFirestore.getInstance()
-    private val CHANNEL_ID = "taskChannel_id"
     private val TAG = "MainActivity"
+    private val JOB_ID = 12
+    private val FIFTY_MINUTES = 60 * 15 * 1000L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,32 +70,35 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun scheduleJob(){
         val componentName = ComponentName(this, TaskJobService::class.java)
-        val jobInfo = JobInfo.Builder(123, componentName)
+        val jobInfo = JobInfo.Builder(JOB_ID, componentName)
             .setRequiresCharging(false)
             .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
             .setPersisted(true)
-            .setPeriodic(60 * 15 * 1000)
+            .setPeriodic(FIFTY_MINUTES)
             .build()
         val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
         val code = jobScheduler.schedule(jobInfo)
         if (code == JobScheduler.RESULT_SUCCESS)
-            Log.d(TAG, "Job scheduled")
+            Log.d(TAG, "JOB SCHEDULED")
         else
-            Log.d(TAG, "Job scheduling failed")
+            Log.d(TAG, "JOB SCHEDULING FAILED")
     }
+
+/*  MAYBE WILL BE USED AFTER
 
     private fun cancelScheduleJob(){
         val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
-        jobScheduler.cancel(123)
+        jobScheduler.cancel(JOB_ID)
         Log.d(TAG, "Job cancelled")
-    }
+    }*/
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.channel_name)
             val descriptionText = getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            val channel = NotificationChannel(
+                TaskConstants.CHANNEL_ID.TASK_PENDING, name, importance).apply {
                 description = descriptionText
             }
             // Register the channel with the system

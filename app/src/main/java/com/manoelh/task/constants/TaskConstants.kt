@@ -14,4 +14,8 @@ class TaskConstants {
     object DATE{
         val PATTERN = "MM/dd/yyyy"
     }
+
+    object CHANNEL_ID{
+        val TASK_PENDING = "taskChannel_id"
+    }
 }
