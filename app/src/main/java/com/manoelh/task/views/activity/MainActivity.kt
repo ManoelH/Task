@@ -2,7 +2,9 @@ package com.manoelh.task.views.activity
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
+import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -10,13 +12,12 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -28,6 +29,7 @@ import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.repository.PriorityCache
 import com.manoelh.task.service.NotificationService
+import com.manoelh.task.service.TaskJobService
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.views.fragment.TaskListFragment
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -40,6 +42,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var mSecurityPreferences: SecurityPreferences
     private val db = FirebaseFirestore.getInstance()
     private val CHANNEL_ID = "taskChannel_id"
+    private val TAG = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,12 +66,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationView.setNavigationItemSelectedListener(this)
         getUserNameFromFirebase()
         createNotificationChannel()
-
+        scheduleJob()
     }
 
-    override fun onStop() {
-        super.onStop()
-        startService( Intent( this, NotificationService::class.java ))
+    private fun scheduleJob(){
+        val componentName = ComponentName(this, TaskJobService::class.java)
+        val jobInfo = JobInfo.Builder(123, componentName)
+            .setRequiresCharging(false)
+            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+            .setPersisted(true)
+            .setPeriodic(60 * 15 * 1000)
+            .build()
+        val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+        val code = jobScheduler.schedule(jobInfo)
+        if (code == JobScheduler.RESULT_SUCCESS)
+            Log.d(TAG, "Job scheduled")
+        else
+            Log.d(TAG, "Job scheduling failed")
+    }
+
+    private fun cancelScheduleJob(){
+        val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+        jobScheduler.cancel(123)
+        Log.d(TAG, "Job cancelled")
     }
 
     private fun createNotificationChannel() {
