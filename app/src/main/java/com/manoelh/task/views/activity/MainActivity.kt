@@ -84,14 +84,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Log.d(TAG, "JOB SCHEDULING FAILED")
     }
 
-/*  MAYBE WILL BE USED AFTER
-
-    private fun cancelScheduleJob(){
-        val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
-        jobScheduler.cancel(JOB_ID)
-        Log.d(TAG, "Job cancelled")
-    }*/
-
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.channel_name)
@@ -211,5 +203,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
+        cancelScheduleJob()
+    }
+
+    private fun cancelScheduleJob(){
+        val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+        jobScheduler.cancel(JOB_ID)
+        Log.d(TAG, "JOB CANCELLED")
     }
 }
