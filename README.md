@@ -22,5 +22,6 @@ kotlinOptions {
 
 
 # Note
+For while the function of notifications works when the app is running in background or not, the app send notifications about the tasks that have the due date equal "today" every 15 minutes using JobScheduler. In the future this implementation will be improvemented to verify and to send notifications in second plane blocking the stop of send notification when the app is closed.
 
-This app will get some improvemnts how: notifications, login with google and image to profile 
+This app will get some improvemnts how: notifications in second plane, login with google and image to profile 
