@@ -1,11 +1,11 @@
 package com.manoelh.task.views.activity
 
+import androidx.lifecycle.Observer
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.ComponentName
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -20,25 +20,21 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
-import com.manoelh.task.constants.DatabaseConstants
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
-import com.manoelh.task.entity.PriorityEntity
-import com.manoelh.task.repository.PriorityCache
+import com.manoelh.task.service.FirebaseFirestoreService
 import com.manoelh.task.service.TaskJobService
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.views.fragment.TaskListFragment
 import kotlinx.android.synthetic.main.app_bar_main.*
-import java.lang.Exception
 import java.util.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mSecurityPreferences: SecurityPreferences
-    private val db = FirebaseFirestore.getInstance()
+    private lateinit var mFirebaseFirestoreService: FirebaseFirestoreService
     private val TAG = "MainActivity"
     private val JOB_ID = 12
     private val FIFTY_MINUTES = 60 * 15 * 1000L
@@ -52,18 +48,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_done, R.id.nav_todo, R.id.nav_logout, R.id.nav_header/*, R.id.nav_gallery, R.id.nav_slideshow,
-                R.id.nav_tools, R.id.nav_share, R.id.nav_send*/
+                R.id.nav_home, R.id.nav_done, R.id.nav_todo, R.id.nav_logout, R.id.nav_header
             ), drawerLayout
         )
         intanceMyObjectsWithContext()
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
-        getUserNameFromFirebase()
+        setupObservers()
+        mFirebaseFirestoreService.searchPriorities()
         createNotificationChannel()
         scheduleJob()
     }
@@ -103,32 +97,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onResume() {
         super.onResume()
         setWelcomeValuesFromUser()
-        listPriorities()
         loadFragment(TaskListFragment.newInstance(TaskConstants.COMPLETED.NOT))
     }
 
-    private fun getUserNameFromFirebase(){
-        var userName: String
-        try {
-            db.collection(DatabaseConstants.COLLECTIONS.USERS.COLLECTION_NAME)
-                .whereEqualTo(DatabaseConstants.COLLECTIONS.USERS.ATTRIBUTES.AUTHENTICATION_ID,
-                    mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID))
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result) {
-                        Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
-                        userName = document.get(DatabaseConstants.COLLECTIONS.USERS.ATTRIBUTES.NAME).toString()
-                        textViewWelcome.text = "Hello $userName!"
-                        mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_NAME, userName)
-                        setWelcomeValuesFromUser()
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.w(ContentValues.TAG, getString(R.string.error_getting_user_name), exception)
-                }
-
-        }catch (e: Exception){
-        }
+    private fun setupObservers(){
+        mFirebaseFirestoreService.getUserName().observe(this, Observer {
+            setWelcomeValuesFromUser()
+        })
     }
 
     private fun setWelcomeValuesFromUser() {
@@ -155,31 +130,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         textViewCurrentDate.text = date
     }
 
-    private fun listPriorities() {
-        val priorities = mutableListOf<PriorityEntity>()
-
-        try {
-            db.collection(DatabaseConstants.COLLECTIONS.PRIORITIES.COLLECTION_NAME)
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result) {
-                        Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
-                        val priorityEntity = PriorityEntity(document.id,
-                            document.get(DatabaseConstants.COLLECTIONS.PRIORITIES.ATTRIBUTES.DESCRIPTION).toString())
-                        priorities.add(priorityEntity)
-                    }
-                    PriorityCache.setCache(priorities)
-                }
-                .addOnFailureListener { exception ->
-                    Log.w(ContentValues.TAG, getString(R.string.error_getting_priorities), exception)
-                }
-        }catch (e: Exception){
-            throw e
-        }
-    }
-
     private fun intanceMyObjectsWithContext(){
         mSecurityPreferences = SecurityPreferences(this)
+        mFirebaseFirestoreService = FirebaseFirestoreService(this)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

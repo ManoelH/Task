@@ -67,7 +67,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private fun saveUserIdAndEmailToSharedPreferences(): (FirebaseUser?) -> Unit {
         return {
             if (it != null){
-                mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_ID, it!!.uid)
+                mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_ID, it.uid)
                 mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_EMAIL, it.email!!)
                 updateUI(it)
             }
