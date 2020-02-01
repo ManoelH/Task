@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.manoelh.task.R
 import com.manoelh.task.business.UserBusiness
 import com.manoelh.task.constants.SharedPreferencesContants
-import com.manoelh.task.service.FirebaseAuthenticationService
+import com.manoelh.task.service.UserService
 import com.manoelh.task.util.SecurityPreferences
 import kotlinx.android.synthetic.main.activity_login.*
 
@@ -21,7 +21,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var mUserBusiness: UserBusiness
     private lateinit var mSecurityPreferences: SecurityPreferences
     private var auth = FirebaseAuth.getInstance()
-    private lateinit var firebaseAuthenticationService: FirebaseAuthenticationService
+    private lateinit var userService: UserService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         buttonLogin.setOnClickListener(this)
         mUserBusiness = UserBusiness(this)
         mSecurityPreferences = SecurityPreferences(this)
-        firebaseAuthenticationService = FirebaseAuthenticationService(this)
+        userService = UserService(this)
         verifyIfUserIsLogged()
         textViewCreateAccount.setOnClickListener(this)
     }
@@ -61,7 +61,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         val email = editTextLoginEmail.text.toString()
         val password = editTextLoginPassword.text.toString()
         changeVisibilityProgressBar()
-        firebaseAuthenticationService.userAuthentication(email, password, saveUserIdAndEmailToSharedPreferences())
+        userService.userAuthentication(email, password, saveUserIdAndEmailToSharedPreferences())
     }
 
     private fun saveUserIdAndEmailToSharedPreferences(): (FirebaseUser?) -> Unit {

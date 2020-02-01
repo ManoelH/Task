@@ -23,7 +23,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.manoelh.task.R
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
-import com.manoelh.task.service.FirebaseFirestoreService
+import com.manoelh.task.service.PriorityService
+import com.manoelh.task.service.TaskService
 import com.manoelh.task.service.TaskJobService
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.views.fragment.TaskListFragment
@@ -34,7 +35,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mSecurityPreferences: SecurityPreferences
-    private lateinit var mFirebaseFirestoreService: FirebaseFirestoreService
+    private lateinit var mTaskService: TaskService
+    private lateinit var mPriorityService: PriorityService
     private val TAG = "MainActivity"
     private val JOB_ID = 12
     private val FIFTY_MINUTES = 60 * 15 * 1000L
@@ -57,7 +59,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
         setupObservers()
-        mFirebaseFirestoreService.searchPriorities()
+        mPriorityService.searchPriorities()
         createNotificationChannel()
         scheduleJob()
     }
@@ -101,7 +103,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setupObservers(){
-        mFirebaseFirestoreService.getUserName().observe(this, Observer {
+        mTaskService.getUserName().observe(this, Observer {
             setWelcomeValuesFromUser()
         })
     }
@@ -132,7 +134,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun intanceMyObjectsWithContext(){
         mSecurityPreferences = SecurityPreferences(this)
-        mFirebaseFirestoreService = FirebaseFirestoreService(this)
+        mTaskService = TaskService(this)
+        mPriorityService = PriorityService(this)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
