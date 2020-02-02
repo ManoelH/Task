@@ -9,6 +9,7 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
 import com.manoelh.task.business.TaskBusiness
@@ -19,6 +20,7 @@ import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.repository.PriorityCache
+import com.manoelh.task.service.TaskService
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.util.ValidationException
 import kotlinx.android.synthetic.main.activity_task_form.*
@@ -31,10 +33,11 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
     private lateinit var mTaskBusiness: TaskBusiness
     private lateinit var mTask: TaskEntity
-    private val mCalendar = Calendar.getInstance()
     private lateinit var mPrioritySelected: PriorityEntity
     private lateinit var mSecurityPreferences: SecurityPreferences
     private lateinit var mPriorities: List<PriorityEntity>
+    private lateinit var mTaskService: TaskService
+    private val mCalendar = Calendar.getInstance()
     private var mTaskId = ""
     private val db = FirebaseFirestore.getInstance()
 
@@ -57,6 +60,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private fun intanceMyObjectsWithContext(){
         mTaskBusiness = TaskBusiness(this)
         mSecurityPreferences = SecurityPreferences(this)
+        mTaskService = TaskService(this)
     }
 
     private fun loadSpinner(){
@@ -218,34 +222,16 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             completed = completed,
             dueDate = dueDate,
             userId = userId)
-        insertTask()
+        setupObservers()
     }
 
-    private fun insertTask(){
-        try {
-            mTaskBusiness.validateTask(mTask)
-            val taskDatabase =
-                hashMapOf(
-                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.AUTHENTICATION_ID to mTask.userId,
-                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED to mTask.completed,
-                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DESCRIPTION to mTask.description,
-                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE to mTask.dueDate,
-                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID to mTask.priorityId)
-            db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME)
-                .add(taskDatabase)
-                .addOnSuccessListener { documentReference ->
-                    Log.d(ContentValues.TAG, getString(R.string.task_added_log) + documentReference.id)
-                    Toast.makeText(this, this.getString(R.string.task_saved_message), Toast.LENGTH_LONG).show()
-                    finish()
-                }
-                .addOnFailureListener { e ->
-                    Log.w(ContentValues.TAG, getString(R.string.error_adding_task), e)
-                    changeVisibilityProgressBar()
-                }
-        }catch (ve: ValidationException){
-            Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
-            changeVisibilityProgressBar()
-        }
+    private fun setupObservers(){
+        mTaskService.insertTask(mTask).observe(this, Observer { idTask ->
+            if (idTask.isNotBlank())
+                finish()
+            else
+                changeVisibilityProgressBar()
+        })
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, dayOfMonth: Int) {

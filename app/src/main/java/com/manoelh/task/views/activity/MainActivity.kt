@@ -24,8 +24,8 @@ import com.manoelh.task.R
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.service.PriorityService
-import com.manoelh.task.service.TaskService
 import com.manoelh.task.service.TaskJobService
+import com.manoelh.task.service.UserService
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.views.fragment.TaskListFragment
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mSecurityPreferences: SecurityPreferences
-    private lateinit var mTaskService: TaskService
+    private lateinit var mUserService: UserService
     private lateinit var mPriorityService: PriorityService
     private val TAG = "MainActivity"
     private val JOB_ID = 12
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setupObservers(){
-        mTaskService.getUserName().observe(this, Observer {
+        mUserService.getUserName().observe(this, Observer {
             setWelcomeValuesFromUser()
         })
     }
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun intanceMyObjectsWithContext(){
         mSecurityPreferences = SecurityPreferences(this)
-        mTaskService = TaskService(this)
+        mUserService = UserService(this)
         mPriorityService = PriorityService(this)
     }
 

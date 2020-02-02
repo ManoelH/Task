@@ -11,14 +11,18 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
 import com.manoelh.task.business.UserBusiness
 import com.manoelh.task.constants.DatabaseConstants
+import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.entity.UserEntity
+import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.util.ValidationException
+import java.lang.Exception
 
 class UserService(val context: Context) {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val TAG = "UserService"
     private val userBusiness = UserBusiness(context)
     private val db = FirebaseFirestore.getInstance()
+    private val mSecurityPreferences = SecurityPreferences(context)
 
     fun userAuthentication( email: String, password: String, callback: (FirebaseUser?) -> Unit){
         auth.signInWithEmailAndPassword(email, password)
@@ -92,5 +96,32 @@ class UserService(val context: Context) {
                 }
         }
         return userEntityMutableLiveData
+    }
+
+    fun getUserName(): MutableLiveData<String>{
+        val userName: MutableLiveData<String> = MutableLiveData()
+
+        try {
+            db.collection(DatabaseConstants.COLLECTIONS.USERS.COLLECTION_NAME)
+                .whereEqualTo(
+                    DatabaseConstants.COLLECTIONS.USERS.ATTRIBUTES.AUTHENTICATION_ID,
+                    mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID))
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        Log.d(TAG, "${document.id} => ${document.data}")
+                        val name = document.get(DatabaseConstants.COLLECTIONS.USERS.ATTRIBUTES.NAME).toString()
+                        userName.postValue(name)
+                        mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_NAME, name)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, context.getString(R.string.error_getting_user_name), exception)
+                }
+
+        }catch (e: Exception){
+            throw e
+        }
+        return userName
     }
 }
