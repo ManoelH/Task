@@ -47,4 +47,31 @@ class TaskService (val context: Context){
         return idTask
     }
 
+     fun loadTaskDataToUpdateFromActivity(taskId: String, userId: String): MutableLiveData<TaskEntity>{
+
+        val taskLiveData: MutableLiveData<TaskEntity> = MutableLiveData()
+        var taskEntity: TaskEntity
+
+         db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(taskId).get()
+             .addOnSuccessListener { document ->
+                 Log.d(TAG, "${document.id} => ${document.data}")
+
+                 taskEntity = TaskEntity(
+                     document.id,
+                     userId,
+                     document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID).toString(),
+                     document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DESCRIPTION).toString(),
+                     document.getBoolean(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED)!!,
+                     document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE).toString()
+                 )
+                 taskLiveData.postValue(taskEntity)
+             }
+             .addOnFailureListener { exception ->
+                 Log.w(TAG, context.getString(R.string.error_getting_task_to_update), exception)
+                 taskLiveData.postValue(null)
+             }
+
+        return taskLiveData
+    }
+
 }

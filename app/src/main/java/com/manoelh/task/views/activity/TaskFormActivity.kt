@@ -74,23 +74,17 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val bundle = intent.extras?.getString(TaskConstants.KEY.TASK_ID)
         if (bundle!=null){
             mTaskId = bundle
-            db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(mTaskId).get()
-                .addOnSuccessListener { document ->
-                    Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
-
-                    mTask = TaskEntity(
-                        document.id,
-                        getUserId(),
-                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID).toString(),
-                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DESCRIPTION).toString(),
-                        document.getBoolean(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED)!!,
-                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE).toString())
-                    setTaskValuesToActivityWhereTheUpdateWillHappen()
-                }
-                .addOnFailureListener { exception ->
-                    Log.w(ContentValues.TAG, getString(R.string.error_getting_task_to_update), exception)
-                }
+            observerLoadUpdateDatas()
         }
+    }
+
+    private fun observerLoadUpdateDatas(){
+        mTaskService.loadTaskDataToUpdateFromActivity(mTaskId, getUserId()).observe(this, Observer { task->
+            if (task != null){
+                mTask = task
+                setTaskValuesToActivityWhereTheUpdateWillHappen()
+            }
+        })
     }
 
     private fun setTaskValuesToActivityWhereTheUpdateWillHappen() {
@@ -222,10 +216,10 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             completed = completed,
             dueDate = dueDate,
             userId = userId)
-        setupObservers()
+        observerInsertDatas()
     }
 
-    private fun setupObservers(){
+    private fun observerInsertDatas(){
         mTaskService.insertTask(mTask).observe(this, Observer { idTask ->
             if (idTask.isNotBlank())
                 finish()
