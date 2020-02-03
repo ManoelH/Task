@@ -17,9 +17,9 @@ import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.util.ValidationException
 import java.lang.Exception
 
+private const val TAG = "UserService"
 class UserService(val context: Context) {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val TAG = "UserService"
     private val userBusiness = UserBusiness(context)
     private val db = FirebaseFirestore.getInstance()
     private val mSecurityPreferences = SecurityPreferences(context)

@@ -31,15 +31,16 @@ import com.manoelh.task.views.fragment.TaskListFragment
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.util.*
 
+private const val TAG = "MainActivity"
+private const val JOB_ID = 12
+private const val FIFTY_MINUTES = 60 * 15 * 1000L
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mSecurityPreferences: SecurityPreferences
     private lateinit var mUserService: UserService
     private lateinit var mPriorityService: PriorityService
-    private val TAG = "MainActivity"
-    private val JOB_ID = 12
-    private val FIFTY_MINUTES = 60 * 15 * 1000L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

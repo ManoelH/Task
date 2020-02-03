@@ -11,9 +11,10 @@ import com.manoelh.task.constants.DatabaseConstants
 import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.util.ValidationException
 
+private const val TAG = "TaskService"
+
 class TaskService (val context: Context){
 
-    private val TAG = "TaskService"
     private val db = FirebaseFirestore.getInstance()
     private val mTaskBusiness = TaskBusiness (context)
 
@@ -70,8 +71,36 @@ class TaskService (val context: Context){
                  Log.w(TAG, context.getString(R.string.error_getting_task_to_update), exception)
                  taskLiveData.postValue(null)
              }
-
         return taskLiveData
+    }
+
+    fun updateTask(task: TaskEntity): MutableLiveData<String>{
+
+        val idTask: MutableLiveData<String> = MutableLiveData()
+        try {
+            mTaskBusiness.validateTask(task)
+
+            db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(task.id)
+                .update(mapOf(
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED to task.completed,
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DESCRIPTION to task.description,
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE to task.dueDate,
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID to task.priorityId
+                ))
+                .addOnSuccessListener {
+                    Log.d(TAG, context.getString(R.string.task_updated_log) +task.id)
+                    Toast.makeText(context, context.getString(R.string.task_updated_message), Toast.LENGTH_LONG).show()
+                    idTask.postValue(task.id)
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, context.getString(R.string.error_update_task), e)
+                    idTask.postValue(null)
+                }
+        }catch (ve: ValidationException){
+            Toast.makeText(context, ve.message, Toast.LENGTH_LONG).show()
+            idTask.postValue(null)
+        }
+        return idTask
     }
 
 }

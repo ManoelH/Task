@@ -1,19 +1,15 @@
 package com.manoelh.task.views.activity
 
 import android.app.DatePickerDialog
-import android.content.ContentValues
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
 import com.manoelh.task.business.TaskBusiness
-import com.manoelh.task.constants.DatabaseConstants
 import com.manoelh.task.constants.PriorityConstants
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
@@ -22,7 +18,6 @@ import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.repository.PriorityCache
 import com.manoelh.task.service.TaskService
 import com.manoelh.task.util.SecurityPreferences
-import com.manoelh.task.util.ValidationException
 import kotlinx.android.synthetic.main.activity_task_form.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -39,7 +34,6 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private lateinit var mTaskService: TaskService
     private val mCalendar = Calendar.getInstance()
     private var mTaskId = ""
-    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,11 +68,11 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val bundle = intent.extras?.getString(TaskConstants.KEY.TASK_ID)
         if (bundle!=null){
             mTaskId = bundle
-            observerLoadUpdateDatas()
+            observerGetTaskData()
         }
     }
 
-    private fun observerLoadUpdateDatas(){
+    private fun observerGetTaskData(){
         mTaskService.loadTaskDataToUpdateFromActivity(mTaskId, getUserId()).observe(this, Observer { task->
             if (task != null){
                 mTask = task
@@ -174,33 +168,16 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             completed,
             dueDate
         )
-        updateTask()
+        observerTaskUpdate()
     }
 
-    private fun updateTask(){
-        try {
-            mTaskBusiness.validateTask(mTask)
-
-            db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(mTask.id)
-                .update(mapOf(
-                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED to mTask.completed,
-                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DESCRIPTION to mTask.description,
-                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE to mTask.dueDate,
-                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID to mTask.priorityId
-                ))
-                .addOnSuccessListener {
-                    Log.d(ContentValues.TAG, getString(R.string.task_updated_log) +mTask.id)
-                    Toast.makeText(this, this.getString(R.string.task_updated_message), Toast.LENGTH_LONG).show()
-                    finish()
-                }
-                .addOnFailureListener { e ->
-                    Log.w(ContentValues.TAG, getString(R.string.error_update_task), e)
-                    changeVisibilityProgressBar()
-                }
-        }catch (ve: ValidationException){
-            Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
-            changeVisibilityProgressBar()
-        }
+    private fun observerTaskUpdate(){
+        mTaskService.updateTask(mTask).observe(this, Observer {
+            if (it != null)
+                finish()
+            else
+                changeVisibilityProgressBar()
+        })
     }
 
     private fun setTaskAttributesToInsert() {
@@ -216,10 +193,10 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             completed = completed,
             dueDate = dueDate,
             userId = userId)
-        observerInsertDatas()
+        observerInsertData()
     }
 
-    private fun observerInsertDatas(){
+    private fun observerInsertData(){
         mTaskService.insertTask(mTask).observe(this, Observer { idTask ->
             if (idTask.isNotBlank())
                 finish()
