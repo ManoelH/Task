@@ -1,4 +1,4 @@
-package com.manoelh.task.service
+package com.manoelh.task.repository
 
 import android.content.Context
 import android.util.Log
@@ -8,13 +8,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
 import com.manoelh.task.business.TaskBusiness
 import com.manoelh.task.constants.DatabaseConstants
+import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.entity.TaskEntity
+import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.util.ValidationException
 
-private const val TAG = "TaskService"
+private const val TAG = "TaskRepository"
 
-class TaskService (val context: Context){
+class TaskRepository (val context: Context){
 
+    private val mSecurityPreferences = SecurityPreferences(context)
     private val db = FirebaseFirestore.getInstance()
     private val mTaskBusiness = TaskBusiness (context)
 
@@ -103,4 +106,76 @@ class TaskService (val context: Context){
         return idTask
     }
 
+    fun deleteTask(id: String): MutableLiveData<String>{
+
+        val idTaskDeleted: MutableLiveData<String> = MutableLiveData()
+
+        db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(id)
+            .delete()
+            .addOnSuccessListener {
+                Log.d(TAG, context.getString(R.string.task_deleted_log))
+                Toast.makeText(context, context.getText(R.string.task_deleted_message), Toast.LENGTH_LONG).show()
+                idTaskDeleted.postValue(id)
+            }
+            .addOnFailureListener {
+                    e -> Log.w(TAG, context.getString(R.string.error_deleting_task), e)
+                Toast.makeText(context, context.getText(R.string.error_deleting_task), Toast.LENGTH_LONG).show()
+                idTaskDeleted.postValue(null)
+            }
+        return idTaskDeleted
+    }
+
+    fun listTasks(taskFilterCompleted: Boolean): MutableLiveData<List<TaskEntity>> {
+        val tasksList = mutableListOf<TaskEntity>()
+        val userId = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!
+        val liveDataTaskList: MutableLiveData<List<TaskEntity>> = MutableLiveData()
+
+        db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME)
+            .whereEqualTo(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.AUTHENTICATION_ID, userId)
+            .whereEqualTo(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED, taskFilterCompleted).get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    Log.d(TAG, "${document.id} => ${document.data}")
+
+                    val taskEntity = TaskEntity(
+                        document.id,
+                        userId,
+                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID).toString(),
+                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DESCRIPTION).toString(),
+                        document.getBoolean(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED)!!,
+                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE).toString())
+                    tasksList.add(taskEntity)
+                    liveDataTaskList.postValue(tasksList)
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, context.getString(R.string.error_getting_all_tasks_log), exception)
+                liveDataTaskList.postValue(null)
+            }
+        return liveDataTaskList
+    }
+
+    fun updateTaskStatus(taskCompleted: Boolean, id: String): MutableLiveData<String> {
+
+        val idTaskUpdate: MutableLiveData<String> = MutableLiveData()
+
+        db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(id)
+            .update(
+                mapOf(
+                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED to taskCompleted
+                )
+            )
+            .addOnSuccessListener {
+                Log.d(TAG, context.getString(R.string.task_updated_message) + id)
+                Toast.makeText(context, context.getString(R.string.task_updated_message), Toast.LENGTH_LONG)
+                    .show()
+                idTaskUpdate.postValue(id)
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, context.getString(R.string.error_update_task), e)
+                Toast.makeText(context, context.getText(R.string.error_update_task), Toast.LENGTH_LONG).show()
+                idTaskUpdate.postValue(null)
+            }
+        return idTaskUpdate
+    }
 }

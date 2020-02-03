@@ -1,4 +1,4 @@
-package com.manoelh.task.service
+package com.manoelh.task.repository
 
 import android.content.Context
 import android.util.Log
@@ -6,12 +6,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
 import com.manoelh.task.constants.DatabaseConstants
 import com.manoelh.task.entity.PriorityEntity
-import com.manoelh.task.repository.PriorityCache
 import java.lang.Exception
 
-class PriorityService(val context: Context) {
+private const val TAG = "PriorityRepository"
 
-    private val TAG = "FirebaseFirestoreService"
+class PriorityRepository(val context: Context) {
+
     private val db = FirebaseFirestore.getInstance()
 
     fun searchPriorities(){

@@ -1,4 +1,4 @@
-package com.manoelh.task.service
+package com.manoelh.task.repository
 
 import android.content.ContentValues
 import android.content.Context
@@ -17,8 +17,10 @@ import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.util.ValidationException
 import java.lang.Exception
 
-private const val TAG = "UserService"
-class UserService(val context: Context) {
+private const val TAG = "UserRepository"
+
+class UserRepository(val context: Context) {
+
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val userBusiness = UserBusiness(context)
     private val db = FirebaseFirestore.getInstance()

@@ -16,7 +16,7 @@ import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.PriorityEntity
 import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.repository.PriorityCache
-import com.manoelh.task.service.TaskService
+import com.manoelh.task.repository.TaskRepository
 import com.manoelh.task.util.SecurityPreferences
 import kotlinx.android.synthetic.main.activity_task_form.*
 import java.text.SimpleDateFormat
@@ -31,7 +31,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private lateinit var mPrioritySelected: PriorityEntity
     private lateinit var mSecurityPreferences: SecurityPreferences
     private lateinit var mPriorities: List<PriorityEntity>
-    private lateinit var mTaskService: TaskService
+    private lateinit var mTaskRepository: TaskRepository
     private val mCalendar = Calendar.getInstance()
     private var mTaskId = ""
 
@@ -54,7 +54,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private fun intanceMyObjectsWithContext(){
         mTaskBusiness = TaskBusiness(this)
         mSecurityPreferences = SecurityPreferences(this)
-        mTaskService = TaskService(this)
+        mTaskRepository = TaskRepository(this)
     }
 
     private fun loadSpinner(){
@@ -73,7 +73,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     private fun observerGetTaskData(){
-        mTaskService.loadTaskDataToUpdateFromActivity(mTaskId, getUserId()).observe(this, Observer { task->
+        mTaskRepository.loadTaskDataToUpdateFromActivity(mTaskId, getUserId()).observe(this, Observer { task->
             if (task != null){
                 mTask = task
                 setTaskValuesToActivityWhereTheUpdateWillHappen()
@@ -172,7 +172,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     private fun observerTaskUpdate(){
-        mTaskService.updateTask(mTask).observe(this, Observer {
+        mTaskRepository.updateTask(mTask).observe(this, Observer {
             if (it != null)
                 finish()
             else
@@ -197,7 +197,7 @@ class TaskFormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     private fun observerInsertData(){
-        mTaskService.insertTask(mTask).observe(this, Observer { idTask ->
+        mTaskRepository.insertTask(mTask).observe(this, Observer { idTask ->
             if (idTask.isNotBlank())
                 finish()
             else

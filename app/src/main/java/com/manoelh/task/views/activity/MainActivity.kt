@@ -23,9 +23,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.manoelh.task.R
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
-import com.manoelh.task.service.PriorityService
+import com.manoelh.task.repository.PriorityRepository
 import com.manoelh.task.service.TaskJobService
-import com.manoelh.task.service.UserService
+import com.manoelh.task.repository.UserRepository
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.views.fragment.TaskListFragment
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -39,8 +39,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mSecurityPreferences: SecurityPreferences
-    private lateinit var mUserService: UserService
-    private lateinit var mPriorityService: PriorityService
+    private lateinit var mUserRepository: UserRepository
+    private lateinit var mPriorityRepository: PriorityRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
         setupObservers()
-        mPriorityService.searchPriorities()
+        mPriorityRepository.searchPriorities()
         createNotificationChannel()
         scheduleJob()
     }
@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setupObservers(){
-        mUserService.getUserName().observe(this, Observer {
+        mUserRepository.getUserName().observe(this, Observer {
             setWelcomeValuesFromUser()
         })
     }
@@ -135,8 +135,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun intanceMyObjectsWithContext(){
         mSecurityPreferences = SecurityPreferences(this)
-        mUserService = UserService(this)
-        mPriorityService = PriorityService(this)
+        mUserRepository = UserRepository(this)
+        mPriorityRepository = PriorityRepository(this)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

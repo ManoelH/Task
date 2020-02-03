@@ -1,27 +1,23 @@
 package com.manoelh.task.views.fragment
 
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.firestore.FirebaseFirestore
 import com.manoelh.task.R
 import com.manoelh.task.adapter.TaskListAdapter
 import com.manoelh.task.business.TaskBusiness
-import com.manoelh.task.constants.DatabaseConstants
-import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.constants.TaskConstants
 import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.interfaces.OnTaskListFragmentInteractionListener
+import com.manoelh.task.repository.TaskRepository
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.views.activity.TaskFormActivity
 
@@ -33,8 +29,8 @@ class TaskListFragment : Fragment(), View.OnClickListener {
     private lateinit var mTaskBusiness: TaskBusiness
     private var taskFilterCompleted = TaskConstants.COMPLETED.NOT
     private lateinit var mTaskListFragmentInteractionListener: OnTaskListFragmentInteractionListener
-    private val db = FirebaseFirestore.getInstance()
     private lateinit var mSecurityPreferences: SecurityPreferences
+    private lateinit var mTaskRepository: TaskRepository
 
     companion object {
         fun newInstance(taskFilterCompleted: Boolean) = TaskListFragment().apply {
@@ -68,7 +64,7 @@ class TaskListFragment : Fragment(), View.OnClickListener {
             }
 
             override fun onDeleteClick(task: TaskEntity) {
-                deleteTask(task.id)
+                observerDeleteTask(task.id)
             }
 
             override fun onImageCompletedClick(task: TaskEntity) {
@@ -76,7 +72,7 @@ class TaskListFragment : Fragment(), View.OnClickListener {
                     task.completed = TaskConstants.COMPLETED.NOT
                 else
                     task.completed = TaskConstants.COMPLETED.YES
-                updateTask(task.completed, task.id)
+                observerUpdateTaskStatus(task.completed, task.id)
             }
         }
         return view
@@ -84,71 +80,35 @@ class TaskListFragment : Fragment(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        listTasks(taskFilterCompleted)
+        observerListTasks()
     }
 
     private fun intanceMyObjectsWithContext() {
         mTaskBusiness = TaskBusiness(mContext)
         mSecurityPreferences = SecurityPreferences(mContext)
+        mTaskRepository = TaskRepository(mContext)
     }
 
-    private fun deleteTask(id: String){
-        db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(id)
-            .delete()
-            .addOnSuccessListener {
-                Log.d(TAG, getString(R.string.task_deleted_log))
-                Toast.makeText(mContext, mContext.getText(R.string.task_deleted_message), Toast.LENGTH_LONG).show()
-                listTasks(taskFilterCompleted)
-            }
-            .addOnFailureListener {
-                    e -> Log.w(TAG, getString(R.string.error_deleting_task), e)
-            }
+    private fun observerDeleteTask(id: String){
+        mTaskRepository.deleteTask(id).observe(this, Observer { idTaskDeleted ->
+            if (idTaskDeleted != null)
+                observerListTasks()
+        })
     }
 
-    private fun listTasks(taskFilterCompleted: Boolean) {
-        val tasksList = mutableListOf<TaskEntity>()
-        val userId = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!
-
-        db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME)
-            .whereEqualTo(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.AUTHENTICATION_ID, userId)
-            .whereEqualTo(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED, taskFilterCompleted).get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    Log.d(TAG, "${document.id} => ${document.data}")
-
-                    val taskEntity = TaskEntity(
-                        document.id,
-                        userId,
-                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.PRIORITY_ID).toString(),
-                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DESCRIPTION).toString(),
-                        document.getBoolean(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED)!!,
-                        document.get(DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.DUE_DATE).toString())
-                    tasksList.add(taskEntity)
-                }
-                loadRecyclerView(tasksList)
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, getString(R.string.error_getting_all_tasks_log), exception)
-            }
+    private fun observerListTasks(){
+        mTaskRepository.listTasks(taskFilterCompleted).observe(this, Observer { tasks ->
+            if (tasks != null)
+                loadRecyclerView(tasks)
+        })
     }
 
-    private fun updateTask(taskCompleted: Boolean, id: String) {
-        db.collection(DatabaseConstants.COLLECTIONS.TASKS.COLLECTION_NAME).document(id)
-            .update(
-                mapOf(
-                    DatabaseConstants.COLLECTIONS.TASKS.ATTRIBUTES.COMPLETED to taskCompleted
-                )
-            )
-            .addOnSuccessListener {
-                Log.d(TAG, getString(R.string.task_updated_message) + id)
-                Toast.makeText(mContext, mContext.getString(R.string.task_updated_message), Toast.LENGTH_LONG)
-                    .show()
-                listTasks(taskFilterCompleted)
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, getString(R.string.error_update_task), e)
-            }
-
+    private fun observerUpdateTaskStatus(taskCompleted: Boolean, taskId: String){
+        mTaskRepository.updateTaskStatus(taskCompleted, taskId)
+            .observe(this, Observer { idTaskUpdated ->
+            if (idTaskUpdated != null)
+                observerListTasks()
+        })
     }
 
     private fun loadRecyclerView(tasksList: List<TaskEntity>) {

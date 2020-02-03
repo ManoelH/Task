@@ -16,7 +16,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.manoelh.task.R
 import com.manoelh.task.business.UserBusiness
 import com.manoelh.task.entity.UserEntity
-import com.manoelh.task.service.UserService
+import com.manoelh.task.repository.UserRepository
 import com.manoelh.task.util.ValidationException
 import kotlinx.android.synthetic.main.activity_register_user.*
 import kotlinx.android.synthetic.main.activity_register_user.progressBar
@@ -27,7 +27,7 @@ class RegisterUserActivity : AppCompatActivity(), View.OnClickListener, TextWatc
     private lateinit var mUserBusiness: UserBusiness
     private var thePasswordsAreDifferent = true
     private lateinit var auth: FirebaseAuth
-    private lateinit var mUserService: UserService
+    private lateinit var mUserRepository: UserRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +39,7 @@ class RegisterUserActivity : AppCompatActivity(), View.OnClickListener, TextWatc
 
     private fun intanceMyObjectsWithContext() {
         mUserBusiness = UserBusiness(this)
-        mUserService = UserService(this)
+        mUserRepository = UserRepository(this)
     }
 
     private fun setListeners() {
@@ -90,9 +90,9 @@ class RegisterUserActivity : AppCompatActivity(), View.OnClickListener, TextWatc
     }
 
     private fun setupObservers(){
-        mUserService.insertIntoFirebaseAuthenticationSystem(mUserEntity).observe(this, Observer { firebaseUser ->
+        mUserRepository.insertIntoFirebaseAuthenticationSystem(mUserEntity).observe(this, Observer { firebaseUser ->
             if (firebaseUser != null){
-                mUserService.insertUser(true, mUserEntity).observe(this, Observer {
+                mUserRepository.insertUser(true, mUserEntity).observe(this, Observer {
                     if (it != null)
                         updateUI(firebaseUser)
                     else
