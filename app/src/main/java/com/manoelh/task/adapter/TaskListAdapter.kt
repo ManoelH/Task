@@ -8,8 +8,8 @@ import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.interfaces.OnTaskListFragmentInteractionListener
 import com.manoelh.task.viewHolder.TaskViewHolder
 
-class TaskListAdapter(val taskList: List<TaskEntity>,
-                      val onTaskListFragmentInteractionListener: OnTaskListFragmentInteractionListener):
+class TaskListAdapter(private val taskList: List<TaskEntity>,
+                      private val onTaskListFragmentInteractionListener: OnTaskListFragmentInteractionListener):
                         RecyclerView.Adapter<TaskViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {

@@ -12,7 +12,7 @@ import com.manoelh.task.entity.TaskEntity
 import com.manoelh.task.interfaces.OnTaskListFragmentInteractionListener
 import com.manoelh.task.repository.PriorityCache
 
-class TaskViewHolder(itemView: View, val context: Context,  val onTaskListFragmentInteractionListener: OnTaskListFragmentInteractionListener)
+class TaskViewHolder(itemView: View, private val context: Context, private val onTaskListFragmentInteractionListener: OnTaskListFragmentInteractionListener)
     : RecyclerView.ViewHolder(itemView){
 
     private val taskDescription = itemView.findViewById<TextView>(R.id.textViewTaskDescriptionList)
