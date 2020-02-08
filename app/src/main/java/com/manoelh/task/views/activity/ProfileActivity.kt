@@ -18,6 +18,7 @@ import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.manoelh.task.R
+import com.manoelh.task.repository.UserRepository
 import kotlinx.android.synthetic.main.activity_profile.*
 import java.io.File
 import java.util.concurrent.Executors
@@ -34,6 +35,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
     private val executor = Executors.newSingleThreadExecutor()
     private var mLensFacing = CameraX.LensFacing.FRONT
+    private lateinit var mUserRepository: UserRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +51,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         viewFinder.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             updateTransform()
         }
-
+        mUserRepository = UserRepository(this)
         setListeners()
     }
 
@@ -150,6 +152,8 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                         Log.d("CameraXApp", msg)
                         viewFinder.post {
                             Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                            mUserRepository.uploadPhoto(file)
+                            finish()
                         }
                     }
                 })

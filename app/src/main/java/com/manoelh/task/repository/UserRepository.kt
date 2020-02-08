@@ -4,10 +4,13 @@ import android.content.ContentValues
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
 import com.manoelh.task.R
 import com.manoelh.task.business.UserBusiness
 import com.manoelh.task.constants.DatabaseConstants
@@ -15,6 +18,7 @@ import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.entity.UserEntity
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.util.ValidationException
+import java.io.File
 import java.lang.Exception
 
 private const val TAG = "UserRepository"
@@ -24,6 +28,7 @@ class UserRepository(val context: Context) {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val userBusiness = UserBusiness(context)
     private val db = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance()
     private val mSecurityPreferences = SecurityPreferences(context)
 
     fun userAuthentication( email: String, password: String, callback: (FirebaseUser?) -> Unit){
@@ -125,5 +130,20 @@ class UserRepository(val context: Context) {
             throw e
         }
         return userName
+    }
+
+    fun uploadPhoto(file: File){
+        val storageRef = storage.reference
+        val fileName = "photo${mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!}.jpg"
+        val profilePhotoReference = storageRef.child("images/$fileName")
+        val uploadTask: UploadTask
+        uploadTask = profilePhotoReference.putFile(file.toUri())
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener {
+            Toast.makeText(context, "Uploaded failed!", Toast.LENGTH_LONG).show()
+            Log.e(TAG, "Error: ${it.message}")
+        }.addOnSuccessListener {
+            Toast.makeText(context, "Image uploaded!", Toast.LENGTH_LONG).show()
+        }
     }
 }
