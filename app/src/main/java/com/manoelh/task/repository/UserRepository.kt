@@ -9,12 +9,14 @@ import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.auth.User
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.manoelh.task.R
 import com.manoelh.task.business.UserBusiness
 import com.manoelh.task.constants.DatabaseConstants
 import com.manoelh.task.constants.SharedPreferencesContants
+import com.manoelh.task.constants.UserConstants
 import com.manoelh.task.entity.UserEntity
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.util.ValidationException
@@ -134,8 +136,7 @@ class UserRepository(val context: Context) {
 
     fun uploadPhoto(file: File){
         val storageRef = storage.reference
-        val fileName = "photo${mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!}.jpg"
-        val profilePhotoReference = storageRef.child("images/$fileName")
+        val profilePhotoReference = storageRef.child(UserConstants.PROFILE_PHOTO.returnProfilePhotoReference(context))
         val uploadTask: UploadTask
         uploadTask = profilePhotoReference.putFile(file.toUri())
         // Register observers to listen for when the download is done or if it fails
@@ -146,4 +147,29 @@ class UserRepository(val context: Context) {
             Toast.makeText(context, "Image uploaded!", Toast.LENGTH_LONG).show()
         }
     }
+
+ /*   fun downloadPhoto(){
+        val storageRef = storage.reference
+        val path = UserConstants.PROFILE_PHOTO.returnProfilePhotoReference(context)
+        val profilePhotoReference = storageRef.child(path)
+
+        storageRef.child(path).downloadUrl.
+            // `url` is the download URL for 'images/stars.jpg'
+
+            // This can be downloaded directly:
+            var xhr = new XMLHttpRequest()
+            xhr.responseType = 'blob';
+            xhr.onload = function(event) {
+                var blob = xhr.response;
+            };
+            xhr.open('GET', url);
+            xhr.send()
+
+            // Or inserted into an <img> element:
+            var img = document.getElementById('myimg');
+            img.src = url;
+        }).catch(function(error) {
+            // Handle any errors
+        })
+    }*/
 }
