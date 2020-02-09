@@ -19,6 +19,7 @@
         android:layout_height="50dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:rotation="270"
         app:srcCompat="@drawable/ic_account_circle_24dp" />
 
     <TextView

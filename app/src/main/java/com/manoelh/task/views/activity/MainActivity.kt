@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
         intanceMyObjectsWithContext()
         setListenersInNavigationViewComponents()
+        loadPhotoToImageViewProfile()
         setupObservers()
         mPriorityRepository.searchPriorities()
         createNotificationChannel()
@@ -150,6 +151,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    private fun loadPhotoToImageViewProfile(){
+        mUserRepository.downloadPhoto(imageViewProfile)
+    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){

@@ -3,13 +3,13 @@ package com.manoelh.task.repository
 import android.content.ContentValues
 import android.content.Context
 import android.util.Log
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.auth.User
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.manoelh.task.R
@@ -20,6 +20,7 @@ import com.manoelh.task.constants.UserConstants
 import com.manoelh.task.entity.UserEntity
 import com.manoelh.task.util.SecurityPreferences
 import com.manoelh.task.util.ValidationException
+import com.squareup.picasso.Picasso
 import java.io.File
 import java.lang.Exception
 
@@ -135,8 +136,8 @@ class UserRepository(val context: Context) {
     }
 
     fun uploadPhoto(file: File){
-        val storageRef = storage.reference
-        val profilePhotoReference = storageRef.child(UserConstants.PROFILE_PHOTO.returnProfilePhotoReference(context))
+        val storageReference = storage.reference
+        val profilePhotoReference = storageReference.child(UserConstants.PROFILE_PHOTO.returnProfilePhotoReference(context))
         val uploadTask: UploadTask
         uploadTask = profilePhotoReference.putFile(file.toUri())
         // Register observers to listen for when the download is done or if it fails
@@ -148,28 +149,24 @@ class UserRepository(val context: Context) {
         }
     }
 
- /*   fun downloadPhoto(){
-        val storageRef = storage.reference
+    fun downloadPhoto(imageViewProfile: ImageView) {
+        val storageReference = FirebaseStorage.getInstance().reference
         val path = UserConstants.PROFILE_PHOTO.returnProfilePhotoReference(context)
-        val profilePhotoReference = storageRef.child(path)
+        val profilePhotoReference = storageReference.child(path)
 
-        storageRef.child(path).downloadUrl.
-            // `url` is the download URL for 'images/stars.jpg'
+        val localFile = File.createTempFile("images", "jpg")
 
-            // This can be downloaded directly:
-            var xhr = new XMLHttpRequest()
-            xhr.responseType = 'blob';
-            xhr.onload = function(event) {
-                var blob = xhr.response;
-            };
-            xhr.open('GET', url);
-            xhr.send()
+        profilePhotoReference.getFile(localFile).addOnSuccessListener {
+            val a = it.storage.downloadUrl
+            a.addOnCompleteListener { task->
+                val image = task.result
+                Picasso.with(context).load(image).into(imageViewProfile)
+            }.addOnFailureListener { exception ->
+                Log.e(TAG, exception.message!!)
+            }
+        }.addOnFailureListener {
+            Log.e(TAG, it.message!!)
+        }
 
-            // Or inserted into an <img> element:
-            var img = document.getElementById('myimg');
-            img.src = url;
-        }).catch(function(error) {
-            // Handle any errors
-        })
-    }*/
+    }
 }
