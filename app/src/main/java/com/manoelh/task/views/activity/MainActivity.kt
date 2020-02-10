@@ -103,6 +103,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onResume()
         setWelcomeValuesFromUser()
         loadFragment(TaskListFragment.newInstance(TaskConstants.COMPLETED.NOT))
+        mUserRepository.downloadPhoto(imageViewProfile)
     }
 
     private fun setupObservers(){
