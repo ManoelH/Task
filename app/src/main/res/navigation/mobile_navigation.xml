@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_home"
+    tools:ignore="UnusedNavigation">
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.manoelh.task.ui.home.HomeFragment"
+        android:name="com.manoelh.task.views.fragment.TaskListFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_task_list" />
 
 <!--    <fragment
         android:id="@+id/nav_gallery"

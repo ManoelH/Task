@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.drawerlayout.widget.DrawerLayout
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var mSecurityPreferences: SecurityPreferences
     private lateinit var mUserRepository: UserRepository
     private lateinit var mPriorityRepository: PriorityRepository
+    private lateinit var imageViewProfile: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,12 +55,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_done, R.id.nav_todo, R.id.nav_logout, R.id.nav_header
+                R.id.nav_home, R.id.nav_done, R.id.nav_todo, R.id.nav_profile, R.id.nav_logout, R.id.nav_header
             ), drawerLayout
         )
         intanceMyObjectsWithContext()
-        val navigationView = findViewById<NavigationView>(R.id.nav_view)
-        navigationView.setNavigationItemSelectedListener(this)
+        setListenersInNavigationViewComponents()
+        loadPhotoToImageViewProfile()
         setupObservers()
         mPriorityRepository.searchPriorities()
         createNotificationChannel()
@@ -139,10 +141,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mPriorityRepository = PriorityRepository(this)
     }
 
+    private fun setListenersInNavigationViewComponents() {
+        val navigationView = findViewById<NavigationView>(R.id.nav_view)
+        navigationView.setNavigationItemSelectedListener(this)
+        val header = navigationView.getHeaderView(0)
+        imageViewProfile = header.findViewById(R.id.imageViewProfile)
+        imageViewProfile.setOnClickListener {
+            openProfileActivity()
+        }
+    }
+
+    private fun loadPhotoToImageViewProfile(){
+        mUserRepository.downloadPhoto(imageViewProfile)
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.nav_todo -> loadFragment(TaskListFragment.newInstance(TaskConstants.COMPLETED.NOT))
             R.id.nav_done -> loadFragment(TaskListFragment.newInstance(TaskConstants.COMPLETED.YES))
+            R.id.nav_profile -> openProfileActivity()
             R.id.nav_logout -> logout()
         }
         return true
@@ -150,6 +167,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun loadFragment(fragment: Fragment){
         supportFragmentManager.beginTransaction().replace(R.id.frameFragment, fragment).commit()
+    }
+
+    private fun openProfileActivity(){
+        startActivity(Intent(this, ProfileActivity::class.java))
     }
 
     private fun logout(){
