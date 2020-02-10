@@ -9,6 +9,7 @@
         <image src="screenshots/edit-task.jpg" width="200"/>
         <image src="screenshots/deleting-task.jpg" width="200"/>
         <image src="screenshots/notification.jpg" width="200"/>
+        <image src="screenshots/camera.jpg" width="200"/>
 </div>
 
 *This app is used to book tasks, this project use Firebase's authentication to login and how database the Firebase Cloud Firestore.
