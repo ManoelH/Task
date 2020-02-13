@@ -72,4 +72,15 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline8"
         app:layout_constraintStart_toStartOf="@+id/guideline9" />
 
+    <ImageButton
+        android:id="@+id/imageButtonGalery"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:tint="@color/colorPrimary"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintStart_toStartOf="@+id/guideline9"
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonTakePhoto"
+        app:srcCompat="@drawable/ic_menu_gallery" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

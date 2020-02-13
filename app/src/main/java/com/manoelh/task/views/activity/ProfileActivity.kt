@@ -1,31 +1,39 @@
 package com.manoelh.task.views.activity
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-
 //CAMERA
+
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.util.Size
+import android.database.Cursor
+import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.net.Uri
+import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
+import android.util.Size
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
-
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.manoelh.task.R
 import com.manoelh.task.repository.UserRepository
 import kotlinx.android.synthetic.main.activity_profile.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 import java.io.File
 import java.util.concurrent.Executors
+
 
 // This is an arbitrary number we are using to keep track of the permission
 // request. Where an app has multiple context for requesting permission,
 // this can help differentiate the different contexts.
+private  const val GALLERY_REQUEST_CODE = 1
 private const val REQUEST_CODE_PERMISSIONS = 10
 
 // This is an array of all the permission specified in the manifest.
@@ -57,11 +65,13 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun setListeners() {
         imageButtonSwitchCamera.setOnClickListener(this)
+        imageButtonGalery.setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
         when(v.id){
             R.id.imageButtonSwitchCamera -> switchCamera()
+            R.id.imageButtonGalery -> pickFromGallery()
         }
     }
 
@@ -178,5 +188,39 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
             baseContext, it) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun pickFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        val mimeTypes = arrayOf("image/jpeg", "image/png")
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+        startActivityForResult(intent, GALLERY_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        // Result code is RESULT_OK only if the user selects an Image
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) when (requestCode) {
+            GALLERY_REQUEST_CODE -> {
+                //data.getData return the content URI for the selected Image
+                val selectedImage: Uri? = data?.data
+                val filePathColumn =
+                    arrayOf(MediaStore.Images.Media.DATA)
+                // Get the cursor
+                val cursor: Cursor? =
+                    contentResolver.query(selectedImage!!, filePathColumn, null, null, null)
+                // Move to first row
+                cursor?.moveToFirst()
+                //Get the column index of MediaStore.Images.Media.DATA
+                val columnIndex: Int = cursor!!.getColumnIndex(filePathColumn[0])
+                //Gets the String value in the column
+                val imgDecodableString: String? = cursor?.getString(columnIndex)
+                cursor?.close()
+                // Set the Image in ImageView after decoding the String
+                imageViewProfile.setImageBitmap(BitmapFactory.decodeFile(imgDecodableString))
+            }
+        }
+
     }
 }
