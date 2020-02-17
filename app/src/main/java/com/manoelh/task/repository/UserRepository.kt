@@ -25,6 +25,8 @@ import java.io.File
 import java.lang.Exception
 
 private const val TAG = "UserRepository"
+private const val IMAGE_PREFIX = "images"
+private const val IMAGE_SUFFIX = "jpg"
 
 class UserRepository(val context: Context) {
 
@@ -142,10 +144,10 @@ class UserRepository(val context: Context) {
         uploadTask = profilePhotoReference.putFile(file.toUri())
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener {
-            Toast.makeText(context, "Uploaded failed!", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.upload_failed), Toast.LENGTH_LONG).show()
             Log.e(TAG, "Error: ${it.message}")
         }.addOnSuccessListener {
-            Toast.makeText(context, "Image uploaded!", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.image_uploaded), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -154,11 +156,11 @@ class UserRepository(val context: Context) {
         val path = UserConstants.PROFILE_PHOTO.returnProfilePhotoReference(context)
         val profilePhotoReference = storageReference.child(path)
 
-        val localFile = File.createTempFile("images", "jpg")
+        val localFile = File.createTempFile(IMAGE_PREFIX, IMAGE_SUFFIX)
 
         profilePhotoReference.getFile(localFile).addOnSuccessListener {
-            val a = it.storage.downloadUrl
-            a.addOnCompleteListener { task->
+            val downloadURL = it.storage.downloadUrl
+            downloadURL.addOnCompleteListener { task->
                 val image = task.result
                 Picasso.with(context).load(image).into(imageViewProfile)
             }.addOnFailureListener { exception ->

@@ -10,7 +10,7 @@ class UserConstants {
     }
 
     object PROFILE_PHOTO{
-        fun returnPhotoName(context: Context): String{
+        private fun returnPhotoName(context: Context): String{
             val securityPreferences = SecurityPreferences(context)
             return "photo${securityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)!!}.jpg"
         }

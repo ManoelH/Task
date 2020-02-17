@@ -32,12 +32,14 @@
     <string name="login_failed">"Login failed"</string>
     <string name="user_validation_exception">Error, enter all values</string>
     <string name="generic_error">One error happened</string>
+    <string name="upload_failed">Uploaded failed!</string>
 
     <!--SUCCESSFUL MESSAGES-->
     <string name="user_saved_message">User registered with success!</string>
     <string name="task_saved_message">Task registered with success!</string>
     <string name="task_updated_message">Task updated with success!</string>
     <string name="task_deleted_message">Task deleted with success!</string>
+    <string name="image_uploaded">Image uploaded!</string>
 
     <!--VALIDATION-->
     <string name="invalid_email">email is invalid!</string>
@@ -81,5 +83,8 @@
     <string name="task_updated_log">Task updated with ID:</string>
     <string name="task_deleted_log">Task successfully deleted!</string>
     <string name="error_getting_all_tasks_log">Error getting all tasks.</string>
+
+    <!-- PERMISSIONS -->
+    <string name="no_user_permission">Permissions not granted by the user.</string>
 
 </resources>
