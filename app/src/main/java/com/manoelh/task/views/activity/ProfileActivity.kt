@@ -23,9 +23,6 @@ import kotlinx.android.synthetic.main.activity_profile.*
 import java.io.File
 import java.util.concurrent.Executors
 
-// This is an arbitrary number we are using to keep track of the permission
-// request. Where an app has multiple context for requesting permission,
-// this can help differentiate the different contexts.
 private const val REQUEST_CODE_PERMISSIONS = 10
 
 // This is an array of all the permission specified in the manifest.
@@ -167,9 +164,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
             if (allPermissionsGranted()) {
                 viewFinder.post { startCamera() }
             } else {
-                Toast.makeText(this,
-                    "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.no_user_permission), Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
