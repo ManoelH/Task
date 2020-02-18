@@ -35,4 +35,4 @@ kotlinOptions {
 # Note
 For while the function of notifications works when the app is running in background or not, the app send notifications about the tasks that have the due date equal "today" every 15 minutes using JobScheduler, and in some phones it's sending notification once. 
 
-This app will get some improvemnts how: notifications system improvements, verification of email, login with google and image to profile 
+This app will get some improvemnts how: notifications system improvements, verification of email, login with google and layout improvements in some pages
