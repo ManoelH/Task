@@ -2,6 +2,7 @@ package com.manoelh.task.repository
 
 import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
@@ -137,11 +138,15 @@ class UserRepository(val context: Context) {
         return userName
     }
 
-    fun uploadPhoto(file: File){
+    fun uploadPhoto(file: File?, uri: Uri?){
+
         val storageReference = storage.reference
         val profilePhotoReference = storageReference.child(UserConstants.PROFILE_PHOTO.returnProfilePhotoReference(context))
         val uploadTask: UploadTask
-        uploadTask = profilePhotoReference.putFile(file.toUri())
+        if(file == null)
+            uploadTask = profilePhotoReference.putFile(uri!!)
+        else
+            uploadTask = profilePhotoReference.putFile(file.toUri())
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener {
             Toast.makeText(context, context.getString(R.string.upload_failed), Toast.LENGTH_LONG).show()

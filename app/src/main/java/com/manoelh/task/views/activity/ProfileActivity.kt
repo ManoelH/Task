@@ -6,12 +6,8 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
-import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
 import android.view.Surface
@@ -25,7 +21,6 @@ import androidx.core.content.ContextCompat
 import com.manoelh.task.R
 import com.manoelh.task.repository.UserRepository
 import kotlinx.android.synthetic.main.activity_profile.*
-import kotlinx.android.synthetic.main.nav_header_main.*
 import java.io.File
 import java.util.concurrent.Executors
 
@@ -35,6 +30,8 @@ import java.util.concurrent.Executors
 // this can help differentiate the different contexts.
 private  const val GALLERY_REQUEST_CODE = 1
 private const val REQUEST_CODE_PERMISSIONS = 10
+private const val TYPE_OF_FILE = "image/*"
+private val TYPE_OF_IMAGES = arrayOf("image/jpeg", "image/png")
 
 // This is an array of all the permission specified in the manifest.
 private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
@@ -162,7 +159,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                         Log.d("CameraXApp", msg)
                         viewFinder.post {
                             Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                            mUserRepository.uploadPhoto(file)
+                            mUserRepository.uploadPhoto(file, null)
                             finish()
                         }
                     }
@@ -177,9 +174,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
             if (allPermissionsGranted()) {
                 viewFinder.post { startCamera() }
             } else {
-                Toast.makeText(this,
-                    "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, this.getString(R.string.no_user_permission), Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
@@ -192,8 +187,8 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun pickFromGallery() {
         val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        val mimeTypes = arrayOf("image/jpeg", "image/png")
+        intent.type = TYPE_OF_FILE
+        val mimeTypes = TYPE_OF_IMAGES
         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
         startActivityForResult(intent, GALLERY_REQUEST_CODE)
     }
@@ -204,21 +199,9 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         if (resultCode == Activity.RESULT_OK) when (requestCode) {
             GALLERY_REQUEST_CODE -> {
                 //data.getData return the content URI for the selected Image
-                val selectedImage: Uri? = data?.data
-                val filePathColumn =
-                    arrayOf(MediaStore.Images.Media.DATA)
-                // Get the cursor
-                val cursor: Cursor? =
-                    contentResolver.query(selectedImage!!, filePathColumn, null, null, null)
-                // Move to first row
-                cursor?.moveToFirst()
-                //Get the column index of MediaStore.Images.Media.DATA
-                val columnIndex: Int = cursor!!.getColumnIndex(filePathColumn[0])
-                //Gets the String value in the column
-                val imgDecodableString: String? = cursor?.getString(columnIndex)
-                cursor?.close()
-                // Set the Image in ImageView after decoding the String
-                imageViewProfile.setImageBitmap(BitmapFactory.decodeFile(imgDecodableString))
+                val selectedImage = data?.data
+                mUserRepository.uploadPhoto(null, selectedImage)
+                finish()
             }
         }
 
