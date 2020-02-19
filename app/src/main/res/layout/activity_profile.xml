@@ -20,8 +20,9 @@
     <ImageButton
         android:id="@+id/imageButtonTakePhoto"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
         android:layout_marginTop="24dp"
+        android:background="@drawable/button_shape_gray"
         android:tint="@color/colorPrimary"
         app:layout_constraintEnd_toStartOf="@+id/guideline8"
         app:layout_constraintHorizontal_bias="0.828"
@@ -46,8 +47,9 @@
     <ImageButton
         android:id="@+id/imageButtonSwitchCamera"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
         android:layout_marginTop="24dp"
+        android:background="@drawable/button_shape_gray"
         android:tint="@color/colorPrimary"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
         app:layout_constraintStart_toStartOf="@+id/guideline9"
@@ -75,8 +77,9 @@
     <ImageButton
         android:id="@+id/imageButtonGalery"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
         android:layout_marginTop="12dp"
+        android:background="@drawable/button_shape_gray"
         android:tint="@color/colorPrimary"
         app:layout_constraintEnd_toStartOf="@+id/guideline8"
         app:layout_constraintStart_toStartOf="@+id/guideline9"
