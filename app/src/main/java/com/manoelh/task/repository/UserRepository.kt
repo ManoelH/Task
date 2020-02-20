@@ -168,6 +168,7 @@ class UserRepository(val context: Context) {
             downloadURL.addOnCompleteListener { task->
                 val image = task.result
                 Picasso.with(context).load(image).into(imageViewProfile)
+                imageViewProfile.rotation = 270f
             }.addOnFailureListener { exception ->
                 Log.e(TAG, exception.message!!)
             }
