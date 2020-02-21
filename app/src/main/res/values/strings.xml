@@ -39,6 +39,8 @@
 
     <!--SUCCESSFUL MESSAGES-->
     <string name="user_saved_message">User registered with success!</string>
+    <string name="user_updated">User updated!</string>
+    <string name="username_updated">Username updated</string>
     <string name="task_saved_message">Task registered with success!</string>
     <string name="task_updated_message">Task updated with success!</string>
     <string name="task_deleted_message">Task deleted with success!</string>
@@ -75,6 +77,8 @@
     <string name="error_getting_priorities">Error getting priorities.</string>
     <string name="authentication_failed">Authentication failed.</string>
     <string name="adding_error_user">Error adding user</string>
+    <string name="error_update_user">Error updating user</string>
+    <string name="error_update_username">Error updating username</string>
     <string name="error_update_task">Error updating task</string>
     <string name="error_getting_task_to_update">Error getting task to update.</string>
     <string name="error_adding_task">Error adding task</string>

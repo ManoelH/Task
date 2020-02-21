@@ -32,7 +32,7 @@ private const val IMAGE_SUFFIX = "jpg"
 class UserRepository(val context: Context) {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val userBusiness = UserBusiness(context)
+    private val mUserBusiness = UserBusiness(context)
     private val db = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
     private val mSecurityPreferences = SecurityPreferences(context)
@@ -60,7 +60,7 @@ class UserRepository(val context: Context) {
         val userEntityMutableLiveData: MutableLiveData<FirebaseUser> = MutableLiveData()
 
         try {
-            userBusiness.validateRegisterUser(userEntity.name, userEntity.email, userEntity.password)
+            mUserBusiness.validateRegisterUser(userEntity.name, userEntity.email, userEntity.password)
 
             auth.createUserWithEmailAndPassword(userEntity.email, userEntity.password)
                 .addOnCompleteListener { authResult ->
@@ -70,7 +70,7 @@ class UserRepository(val context: Context) {
                         val user = auth.currentUser
                         val userId = user!!.uid
                         userEntity.id = userId
-                        userBusiness.saveSharedPreferencesUser(userEntity)
+                        mUserBusiness.saveSharedPreferencesUser(userEntity)
                         userEntityMutableLiveData.postValue(user)
                     } else {
                         // If sign in fails, display a message to the user.
@@ -109,6 +109,44 @@ class UserRepository(val context: Context) {
                 }
         }
         return userEntityMutableLiveData
+    }
+
+    fun updateUserPassword(userEntity: UserEntity): MutableLiveData<String>{
+        val idUser: MutableLiveData<String> = MutableLiveData()
+        try {
+            mUserBusiness.validateUpdateUser(userEntity.name, userEntity.password)
+
+            val user = auth.currentUser
+
+            user?.updatePassword(userEntity.password)
+                ?.addOnSuccessListener {
+                    updateUsername(userEntity)
+                    Log.d(TAG, context.getString(R.string.user_updated))
+                    Toast.makeText(context, context.getString(R.string.user_updated), Toast.LENGTH_LONG).show()
+                    idUser.postValue(userEntity.id)
+                }
+                ?.addOnFailureListener {
+                    Toast.makeText(context, context.getString(R.string.error_update_user), Toast.LENGTH_LONG).show()
+                    idUser.postValue(null)
+                }
+        }catch (ve: ValidationException){
+            Toast.makeText(context, ve.message, Toast.LENGTH_LONG).show()
+            idUser.postValue(null)
+        }
+        return idUser
+    }
+
+    private fun updateUsername(userEntity: UserEntity){
+
+        db.collection(DatabaseConstants.COLLECTIONS.USERS.COLLECTION_NAME).document(userEntity.id)
+            .update(mapOf(DatabaseConstants.COLLECTIONS.USERS.ATTRIBUTES.NAME to userEntity.name))
+            .addOnSuccessListener {
+                Log.d(TAG, context.getString(R.string.username_updated) + userEntity.id)
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, context.getString(R.string.error_update_username), e)
+                Toast.makeText(context, context.getString(R.string.error_update_username), Toast.LENGTH_LONG).show()
+            }
     }
 
     fun getUserName(): MutableLiveData<String>{

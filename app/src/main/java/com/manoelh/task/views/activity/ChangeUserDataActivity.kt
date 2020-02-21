@@ -8,17 +8,33 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ProgressBar
 import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import com.manoelh.task.R
+import com.manoelh.task.constants.SharedPreferencesContants
+import com.manoelh.task.entity.UserEntity
+import com.manoelh.task.repository.UserRepository
+import com.manoelh.task.util.SecurityPreferences
 import kotlinx.android.synthetic.main.activity_change_user_data.*
 
 class ChangeUserDataActivity : AppCompatActivity(), View.OnClickListener, TextWatcher {
 
     private var thePasswordsAreDifferent: Boolean ?= null
+    private lateinit var mUserRepository: UserRepository
+    private lateinit var mSecurityPreferences: SecurityPreferences
+    private lateinit var mUserEntity: UserEntity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_change_user_data)
+        initializeVariables()
         setListeners()
+        getUserName()
+        setupObservers()
+    }
+
+    private fun initializeVariables() {
+        mUserRepository = UserRepository(this)
+        mSecurityPreferences = SecurityPreferences(this)
     }
 
     private fun setListeners(){
@@ -27,18 +43,14 @@ class ChangeUserDataActivity : AppCompatActivity(), View.OnClickListener, TextWa
         editTextRewriteNewPassword.addTextChangedListener(this)
     }
 
-    private fun changeVisibilityProgressBar(){
-        if (progressBarEditUser.isVisible) {
-            progressBarEditUser.visibility = ProgressBar.INVISIBLE
-            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-        }
+    private fun getUserName(){
+        editTextNameEditUser.setText(mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_NAME))
+    }
 
-        else{
-            progressBarEditUser.visibility = ProgressBar.VISIBLE
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-        }
+    private fun setupObservers(){
+        mUserRepository.updateUserPassword(mUserEntity).observe(this, Observer {
+            finish()
+        })
     }
 
     override fun afterTextChanged(s: Editable?) {
@@ -64,6 +76,20 @@ class ChangeUserDataActivity : AppCompatActivity(), View.OnClickListener, TextWa
     }
 
     private fun updateUser(){
+        changeVisibilityProgressBar()
+    }
 
+    private fun changeVisibilityProgressBar(){
+        if (progressBarEditUser.isVisible) {
+            progressBarEditUser.visibility = ProgressBar.INVISIBLE
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        }
+
+        else{
+            progressBarEditUser.visibility = ProgressBar.VISIBLE
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        }
     }
 }

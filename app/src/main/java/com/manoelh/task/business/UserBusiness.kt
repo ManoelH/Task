@@ -23,6 +23,15 @@ class UserBusiness (var context: Context) {
             throw ValidationException(context.getString(R.string.validation_security_password))
     }
 
+    fun validateUpdateUser(name: String, password: String){
+        if (name.isBlank() || password.isBlank())
+            throw ValidationException(context.getString(R.string.user_validation_exception))
+        if (password.length < 8)
+            throw ValidationException(context.getString(R.string.validation_password_characters))
+        if (password.trim().matches(UserConstants.PATTERNS.PASSWORD_VALIDATION.toRegex()))
+            throw ValidationException(context.getString(R.string.validation_security_password))
+    }
+
     fun saveSharedPreferencesUser(user: UserEntity){
         mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_ID, user.id)
         mSecurityPreferences.storeString(SharedPreferencesContants.KEYS.USER_NAME, user.name)
