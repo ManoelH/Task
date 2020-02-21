@@ -26,6 +26,9 @@
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="prompt_rewrite_password">Rewrite password</string>
+    <string name="prompt_current_password">Current password</string>
+    <string name="prompt_new_password">New password</string>
+    <string name="prompt_rewrite_new_password">Rewrite the new password</string>
     <string name="prompt_name">Name</string>
 
     <!--ERROR-->

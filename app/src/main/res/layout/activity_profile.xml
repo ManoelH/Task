@@ -86,4 +86,17 @@
         app:layout_constraintTop_toBottomOf="@+id/imageButtonTakePhoto"
         app:srcCompat="@drawable/ic_menu_gallery" />
 
+    <Button
+        android:id="@+id/buttonChangeUserData"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="144dp"
+        android:background="@drawable/button_shape_gray"
+        android:text="Change your data"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline9"
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonGalery" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

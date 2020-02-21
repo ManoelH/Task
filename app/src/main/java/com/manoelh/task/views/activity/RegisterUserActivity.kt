@@ -25,7 +25,7 @@ class RegisterUserActivity : AppCompatActivity(), View.OnClickListener, TextWatc
 
     private lateinit var mUserEntity: UserEntity
     private lateinit var mUserBusiness: UserBusiness
-    private var thePasswordsAreDifferent = true
+    private var thePasswordsAreDifferent: Boolean ?= null
     private lateinit var auth: FirebaseAuth
     private lateinit var mUserRepository: UserRepository
 
@@ -66,7 +66,7 @@ class RegisterUserActivity : AppCompatActivity(), View.OnClickListener, TextWatc
 
     private fun registerUser(){
         try {
-            if (thePasswordsAreDifferent)
+            if (thePasswordsAreDifferent!!)
                 Toast.makeText(this, this.getText(R.string.the_passwords_are_not_equals), Toast.LENGTH_SHORT).show()
             else{
                 val name = editTextName.text.toString()

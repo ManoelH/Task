@@ -63,12 +63,14 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private fun setListeners() {
         imageButtonSwitchCamera.setOnClickListener(this)
         imageButtonGalery.setOnClickListener(this)
+        buttonChangeUserData.setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
         when(v.id){
             R.id.imageButtonSwitchCamera -> switchCamera()
             R.id.imageButtonGalery -> pickFromGallery()
+            R.id.buttonChangeUserData -> startActivity(Intent(this, ChangeUserDataActivity::class.java))
         }
     }
 
