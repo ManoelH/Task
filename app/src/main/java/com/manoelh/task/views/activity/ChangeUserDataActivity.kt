@@ -4,24 +4,30 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import com.manoelh.task.R
+import com.manoelh.task.business.UserBusiness
 import com.manoelh.task.constants.SharedPreferencesContants
 import com.manoelh.task.entity.UserEntity
 import com.manoelh.task.repository.UserRepository
 import com.manoelh.task.util.SecurityPreferences
+import com.manoelh.task.util.ValidationException
 import kotlinx.android.synthetic.main.activity_change_user_data.*
 
+private const val TAG = "ChangeUserDataActivity"
 class ChangeUserDataActivity : AppCompatActivity(), View.OnClickListener, TextWatcher {
 
     private var thePasswordsAreDifferent: Boolean ?= null
     private lateinit var mUserRepository: UserRepository
     private lateinit var mSecurityPreferences: SecurityPreferences
     private lateinit var mUserEntity: UserEntity
+    private lateinit var mUserBusiness: UserBusiness
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +35,12 @@ class ChangeUserDataActivity : AppCompatActivity(), View.OnClickListener, TextWa
         initializeVariables()
         setListeners()
         getUserName()
-        setupObservers()
     }
 
     private fun initializeVariables() {
         mUserRepository = UserRepository(this)
         mSecurityPreferences = SecurityPreferences(this)
+        mUserBusiness = UserBusiness(this)
     }
 
     private fun setListeners(){
@@ -47,20 +53,14 @@ class ChangeUserDataActivity : AppCompatActivity(), View.OnClickListener, TextWa
         editTextNameEditUser.setText(mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_NAME))
     }
 
-    private fun setupObservers(){
-        mUserRepository.updateUserPassword(mUserEntity).observe(this, Observer {
-            finish()
-        })
-    }
-
     override fun afterTextChanged(s: Editable?) {
-        verifyIfThePasswordAreEquals()
+        verifyIfTheNewPasswordAreEquals()
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
     }
 
-    private fun verifyIfThePasswordAreEquals(){
+    private fun verifyIfTheNewPasswordAreEquals(){
         textViewPasswordsAreNotEqualsEditUser.isVisible =
             (editTextNewPassword.text.toString() != editTextRewriteNewPassword.text.toString())
         thePasswordsAreDifferent = textViewPasswordsAreNotEqualsEditUser.isVisible
@@ -76,7 +76,42 @@ class ChangeUserDataActivity : AppCompatActivity(), View.OnClickListener, TextWa
     }
 
     private fun updateUser(){
-        changeVisibilityProgressBar()
+        val currentPassword = editTextPasswordEditUser.text.toString()
+
+        setUserEntity()
+        verifyTheCurrentPasswordIsRight(currentPassword)
+        verifyIfTheNewPasswordAreEquals()
+        if (!thePasswordsAreDifferent!!){
+            changeVisibilityProgressBar()
+            updateUserObserver()
+        }
+    }
+
+    private fun setUserEntity() {
+        val userId = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_ID)
+        val username = editTextNameEditUser.text.toString()
+        val email = mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_EMAIL)
+        val newPassword = editTextNewPassword.text.toString()
+        mUserEntity =
+            UserEntity(id = userId!!, name = username, email = email!!, password = newPassword)
+    }
+
+    private fun verifyTheCurrentPasswordIsRight(currentPassword: String){
+        try {
+            mUserBusiness.theCurrentPasswordTypedIsRight(currentPassword)
+        }catch (ve: ValidationException){
+            Log.e(TAG, ve.message, ve)
+            Toast.makeText(this, ve.message, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun updateUserObserver(){
+        mUserRepository.updateUserPassword(mUserEntity).observe(this, Observer {
+            if(it != null)
+                finish()
+            else
+                changeVisibilityProgressBar()
+        })
     }
 
     private fun changeVisibilityProgressBar(){

@@ -6,5 +6,6 @@ class SharedPreferencesContants {
         val USER_ID = "user_id"
         val USER_NAME = "userName"
         val USER_EMAIL = "userEmail"
+        val USER_PASSWORD = "userPassword"
     }
 }
