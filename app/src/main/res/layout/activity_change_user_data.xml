@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="10dp">
+    android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="16dp"
         tools:context=".views.activity.ChangeUserDataActivity">
 
         <ProgressBar
@@ -24,7 +24,7 @@
 
         <TextView
             android:id="@+id/textViewPasswordsAreNotEqualsEditUser"
-            android:layout_width="405dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/the_passwords_are_not_equals"
             android:textColor="@color/colorAccent"
@@ -37,7 +37,7 @@
         <EditText
             android:id="@+id/editTextPasswordEditUser"
             style="@style/mEditTextColorsCustom"
-            android:layout_width="411dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:drawableStart="@drawable/ic_lock"
@@ -52,7 +52,7 @@
         <EditText
             android:id="@+id/editTextNewPassword"
             style="@style/mEditTextColorsCustom"
-            android:layout_width="411dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:drawableStart="@drawable/ic_lock"
@@ -67,7 +67,7 @@
         <EditText
             android:id="@+id/editTextNameEditUser"
             style="@style/mEditTextColorsCustom"
-            android:layout_width="411dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="84dp"
             android:drawableStart="@drawable/ic_user"
@@ -82,7 +82,7 @@
         <EditText
             android:id="@+id/editTextRewriteNewPassword"
             style="@style/mEditTextColorsCustom"
-            android:layout_width="411dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:drawableStart="@drawable/ic_lock"
