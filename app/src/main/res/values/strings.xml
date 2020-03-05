@@ -54,6 +54,8 @@
     <string name="description_validation">Error description cannot be empty</string>
     <string name="the_passwords_are_not_equals">The passwords are not equals</string>
     <string name="date_validation">Error date cannot be empty</string>
+    <string name="error_type_the_current_password">Error type the current password</string>
+    <string name="current_password_is_wrong">Error the current password is wrong</string>
 
     <!--TASK PROPRIETIES-->
     <string name="description">Description</string>
@@ -93,5 +95,4 @@
 
     <!-- PERMISSIONS -->
     <string name="no_user_permission">Permissions not granted by the user.</string>
-
 </resources>

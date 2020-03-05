@@ -44,9 +44,9 @@ class UserBusiness (var context: Context) {
         val currentPasswordFromSecurityPreferences =
             mSecurityPreferences.getStoreString(SharedPreferencesContants.KEYS.USER_PASSWORD)
         when {
-            currentPasswordTyped.isBlank() -> throw ValidationException("Error type the current password")
+            currentPasswordTyped.isBlank() -> throw ValidationException(context.getString(R.string.error_type_the_current_password))
             currentPasswordTyped != currentPasswordFromSecurityPreferences ->
-                throw ValidationException("Error the current password is wrong")
+                throw ValidationException(context.getString(R.string.current_password_is_wrong))
         }
     }
 }

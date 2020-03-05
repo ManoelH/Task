@@ -21,12 +21,12 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+private const val TAG = "JobService"
+private const val taskCompleted = false
+
 class TaskJobService: JobService() {
 
-    private val TAG = "JobService"
     private var jobCancelled = false
-
-    private val taskCompleted = false
     private val db = FirebaseFirestore.getInstance()
     private lateinit var mSecurityPreferences: SecurityPreferences
     private var mTasksPending: MutableList<TaskEntity> = arrayListOf()
