@@ -6,6 +6,7 @@ import android.app.job.JobParameters
 import android.app.job.JobService
 import android.content.ContentValues
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -22,6 +23,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+
 private const val TAG = "JobService"
 private const val taskCompleted = false
 
@@ -36,18 +38,35 @@ class TaskJobService: JobService(), Runnable {
     private var startMode: Int = 0             // indicates how to behave if the service is killed
     private var binder: IBinder? = null        // interface for clients that bind
     private var allowRebind: Boolean = false
+    private lateinit var mPhotoTask: TaskRunnableDecodeMethods
+
+    interface TaskRunnableDecodeMethods {
+        fun setImageDecodeThread(currentThread: Thread?)
+        val byteBuffer: ByteArray?
+
+        fun handleDecodeState(state: Int)
+        val targetWidth: Int
+        val targetHeight: Int
+
+        fun setImage(image: Bitmap?)
+    }
 
     override fun run() {
-        // Moves the current Thread into the background
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND)
+        mPhotoTask.setImageDecodeThread(Thread.currentThread())
 
-        /*
-         * Stores the current Thread in the PhotoTask instance,
-         * so that the instance
-         * can interrupt the Thread.
-         */
+        //TEST
+        Thread(Runnable {
+            run {
+                Log.d(TAG, "LISTING TASKS PENDING")
+                listTasks()
+                if (jobCancelled)
+                    return@run
 
-
+                Log.d(TAG, "JOB FINISHED")
+                jobFinished(params, false)
+            }
+        }).start()
     }
 
     override fun onStartJob(params: JobParameters?): Boolean {
